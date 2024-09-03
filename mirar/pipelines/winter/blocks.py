@@ -1,108 +1,102 @@
 """
 Module for WINTER data reduction
 """
-
 # pylint: disable=duplicate-code
 import os
 
 from winterrb.model import WINTERNet
 
-from mirar.catalog.kowalski import PS1, PS1STRM, TMASS, ZTF, Gaia, GaiaBright, PS1SGSc
+from mirar.catalog.kowalski import Gaia
+from mirar.catalog.kowalski import GaiaBright
+from mirar.catalog.kowalski import PS1
+from mirar.catalog.kowalski import PS1SGSc
+from mirar.catalog.kowalski import PS1STRM
+from mirar.catalog.kowalski import TMASS
+from mirar.catalog.kowalski import ZTF
 from mirar.downloader.get_test_data import get_test_data_dir
-from mirar.paths import (
-    BASE_NAME_KEY,
-    DITHER_N_KEY,
-    EXPTIME_KEY,
-    LATEST_SAVE_KEY,
-    MAX_DITHER_KEY,
-    OBSCLASS_KEY,
-    PROC_HISTORY_KEY,
-    RAW_IMG_KEY,
-    SOURCE_HISTORY_KEY,
-    SOURCE_NAME_KEY,
-    TARGET_KEY,
-    ZP_KEY,
-    base_output_dir,
-)
-from mirar.pipelines.winter.config import (
-    prv_candidate_cols,
-    psfex_path,
-    scamp_config_path,
-    sextractor_astrometry_config,
-    sextractor_astromstats_config,
-    sextractor_candidate_config,
-    sextractor_photometry_config,
-    sextractor_photometry_psf_config,
-    sextractor_reference_psf_phot_config,
-    swarp_config_path,
-    winter_avro_schema_path,
-    winter_cal_requirements,
-    winter_fritz_config,
-)
-from mirar.pipelines.winter.constants import NXSPLIT, NYSPLIT
-from mirar.pipelines.winter.generator import (
-    apply_rb_to_table,
-    mask_stamps_around_bright_stars,
-    select_winter_dome_flats_images,
-    select_winter_flat_images,
-    select_winter_sky_flat_images,
-    winter_anet_sextractor_config_path_generator,
-    winter_astrometric_ref_catalog_generator,
-    winter_astrometric_ref_catalog_namer,
-    winter_astrometry_sextractor_catalog_purifier,
-    winter_astrostat_catalog_purifier,
-    winter_boardid_6_demasker,
-    winter_candidate_annotator_filterer,
-    winter_candidate_avro_fields_calculator,
-    winter_candidate_quality_filterer,
-    winter_fourier_filtered_image_generator,
-    winter_history_deprecated_constraint,
-    winter_imsub_catalog_purifier,
-    winter_new_source_updater,
-    winter_photcal_color_columns_generator,
-    winter_photometric_catalog_generator,
-    winter_photometric_catalogs_purifier,
-    winter_photometric_ref_catalog_namer,
-    winter_reference_generator,
-    winter_reference_image_resampler_for_zogy,
-    winter_reference_psf_phot_sextractor,
-    winter_reference_psfex,
-    winter_reference_sextractor,
-    winter_skyportal_annotator,
-    winter_source_entry_updater,
-    winter_stackid_annotator,
-)
-from mirar.pipelines.winter.load_winter_image import (
-    annotate_winter_subdet_headers,
-    get_raw_winter_mask,
-    load_astrometried_winter_image,
-    load_stacked_winter_image,
-    load_test_winter_image,
-    load_winter_mef_image,
-    load_winter_stack,
-)
-from mirar.pipelines.winter.models import (
-    DEFAULT_FIELD,
-    NAME_START,
-    SOURCE_PREFIX,
-    AstrometryStat,
-    Candidate,
-    Diff,
-    Exposure,
-    Raw,
-    Source,
-    Stack,
-)
+from mirar.paths import BASE_NAME_KEY
+from mirar.paths import base_output_dir
+from mirar.paths import DITHER_N_KEY
+from mirar.paths import EXPTIME_KEY
+from mirar.paths import LATEST_SAVE_KEY
+from mirar.paths import MAX_DITHER_KEY
+from mirar.paths import OBSCLASS_KEY
+from mirar.paths import PROC_HISTORY_KEY
+from mirar.paths import RAW_IMG_KEY
+from mirar.paths import SOURCE_HISTORY_KEY
+from mirar.paths import SOURCE_NAME_KEY
+from mirar.paths import TARGET_KEY
+from mirar.paths import ZP_KEY
+from mirar.pipelines.winter.config import prv_candidate_cols
+from mirar.pipelines.winter.config import psfex_path
+from mirar.pipelines.winter.config import scamp_config_path
+from mirar.pipelines.winter.config import sextractor_astrometry_config
+from mirar.pipelines.winter.config import sextractor_astromstats_config
+from mirar.pipelines.winter.config import sextractor_candidate_config
+from mirar.pipelines.winter.config import sextractor_photometry_config
+from mirar.pipelines.winter.config import sextractor_photometry_psf_config
+from mirar.pipelines.winter.config import sextractor_reference_psf_phot_config
+from mirar.pipelines.winter.config import swarp_config_path
+from mirar.pipelines.winter.config import winter_avro_schema_path
+from mirar.pipelines.winter.config import winter_cal_requirements
+from mirar.pipelines.winter.config import winter_fritz_config
+from mirar.pipelines.winter.constants import NXSPLIT
+from mirar.pipelines.winter.constants import NYSPLIT
+from mirar.pipelines.winter.generator import apply_rb_to_table
+from mirar.pipelines.winter.generator import mask_stamps_around_bright_stars
+from mirar.pipelines.winter.generator import select_winter_dome_flats_images
+from mirar.pipelines.winter.generator import select_winter_flat_images
+from mirar.pipelines.winter.generator import select_winter_sky_flat_images
+from mirar.pipelines.winter.generator import winter_anet_sextractor_config_path_generator
+from mirar.pipelines.winter.generator import winter_astrometric_ref_catalog_generator
+from mirar.pipelines.winter.generator import winter_astrometric_ref_catalog_namer
+from mirar.pipelines.winter.generator import winter_astrometry_sextractor_catalog_purifier
+from mirar.pipelines.winter.generator import winter_astrostat_catalog_purifier
+from mirar.pipelines.winter.generator import winter_boardid_6_demasker
+from mirar.pipelines.winter.generator import winter_candidate_annotator_filterer
+from mirar.pipelines.winter.generator import winter_candidate_avro_fields_calculator
+from mirar.pipelines.winter.generator import winter_candidate_quality_filterer
+from mirar.pipelines.winter.generator import winter_fourier_filtered_image_generator
+from mirar.pipelines.winter.generator import winter_history_deprecated_constraint
+from mirar.pipelines.winter.generator import winter_imsub_catalog_purifier
+from mirar.pipelines.winter.generator import winter_new_source_updater
+from mirar.pipelines.winter.generator import winter_photcal_color_columns_generator
+from mirar.pipelines.winter.generator import winter_photometric_catalog_generator
+from mirar.pipelines.winter.generator import winter_photometric_catalogs_purifier
+from mirar.pipelines.winter.generator import winter_photometric_ref_catalog_namer
+from mirar.pipelines.winter.generator import winter_reference_generator
+from mirar.pipelines.winter.generator import winter_reference_image_resampler_for_zogy
+from mirar.pipelines.winter.generator import winter_reference_psf_phot_sextractor
+from mirar.pipelines.winter.generator import winter_reference_psfex
+from mirar.pipelines.winter.generator import winter_reference_sextractor
+from mirar.pipelines.winter.generator import winter_skyportal_annotator
+from mirar.pipelines.winter.generator import winter_source_entry_updater
+from mirar.pipelines.winter.generator import winter_stackid_annotator
+from mirar.pipelines.winter.load_winter_image import annotate_winter_subdet_headers
+from mirar.pipelines.winter.load_winter_image import get_raw_winter_mask
+from mirar.pipelines.winter.load_winter_image import load_astrometried_winter_image
+from mirar.pipelines.winter.load_winter_image import load_stacked_winter_image
+from mirar.pipelines.winter.load_winter_image import load_test_winter_image
+from mirar.pipelines.winter.load_winter_image import load_winter_mef_image
+from mirar.pipelines.winter.load_winter_image import load_winter_stack
+from mirar.pipelines.winter.models import AstrometryStat
+from mirar.pipelines.winter.models import Candidate
+from mirar.pipelines.winter.models import DEFAULT_FIELD
+from mirar.pipelines.winter.models import Diff
+from mirar.pipelines.winter.models import Exposure
+from mirar.pipelines.winter.models import NAME_START
+from mirar.pipelines.winter.models import Raw
+from mirar.pipelines.winter.models import Source
+from mirar.pipelines.winter.models import SOURCE_PREFIX
+from mirar.pipelines.winter.models import Stack
 from mirar.pipelines.winter.nlc import apply_winter_nlc
-from mirar.pipelines.winter.validator import (
-    masked_images_rejector,
-    poor_astrometric_quality_rejector,
-    winter_dark_oversubtraction_rejector,
-)
-from mirar.processors.astromatic import PSFex, Scamp
+from mirar.pipelines.winter.validator import masked_images_rejector
+from mirar.pipelines.winter.validator import poor_astrometric_quality_rejector
+from mirar.pipelines.winter.validator import winter_dark_oversubtraction_rejector
+from mirar.processors.astromatic import PSFex
+from mirar.processors.astromatic import Scamp
 from mirar.processors.astromatic.sextractor.background_subtractor import (
-    SextractorBkgSubtractor,
-)
+    SextractorBkgSubtractor, )
 from mirar.processors.astromatic.sextractor.sextractor import Sextractor
 from mirar.processors.astromatic.swarp.swarp import Swarp
 from mirar.processors.astrometry.anet.anet_processor import AstrometryNet
@@ -111,54 +105,51 @@ from mirar.processors.avro import IPACAvroExporter
 from mirar.processors.catalog_limiting_mag import CatalogLimitingMagnitudeCalculator
 from mirar.processors.csvlog import CSVLog
 from mirar.processors.dark import DarkCalibrator
-from mirar.processors.database.database_inserter import (
-    DatabaseImageBatchInserter,
-    DatabaseImageInserter,
-    DatabaseSourceInserter,
-)
+from mirar.processors.database.database_inserter import DatabaseImageBatchInserter
+from mirar.processors.database.database_inserter import DatabaseImageInserter
+from mirar.processors.database.database_inserter import DatabaseSourceInserter
 from mirar.processors.database.database_selector import SelectSourcesWithMetadata
 from mirar.processors.database.database_updater import ImageDatabaseMultiEntryUpdater
 from mirar.processors.flat import FlatCalibrator
-from mirar.processors.mask import (  # MaskAboveThreshold,
-    MaskDatasecPixels,
-    MaskPixelsFromFunction,
-)
+from mirar.processors.mask import MaskDatasecPixels
+from mirar.processors.mask import MaskPixelsFromFunction
 from mirar.processors.photcal import ZPWithColorTermCalculator
 from mirar.processors.photcal.photcalibrator import PhotCalibrator
-from mirar.processors.photometry import AperturePhotometry, PSFPhotometry
-from mirar.processors.reference import GetReferenceImage, ProcessReference
+from mirar.processors.photometry import AperturePhotometry
+from mirar.processors.photometry import PSFPhotometry
+from mirar.processors.reference import GetReferenceImage
+from mirar.processors.reference import ProcessReference
 from mirar.processors.skyportal.skyportal_candidate import SkyportalCandidateUploader
-from mirar.processors.sources import (
-    CandidateNamer,
-    CustomSourceTableModifier,
-    ForcedPhotometryDetector,
-    SourceBatcher,
-    SourceLoader,
-    SourceWriter,
-    ZOGYSourceDetector,
-)
+from mirar.processors.sources import CandidateNamer
+from mirar.processors.sources import CustomSourceTableModifier
+from mirar.processors.sources import ForcedPhotometryDetector
+from mirar.processors.sources import SourceBatcher
+from mirar.processors.sources import SourceLoader
+from mirar.processors.sources import SourceWriter
+from mirar.processors.sources import ZOGYSourceDetector
 from mirar.processors.sources.machine_learning import Pytorch
-from mirar.processors.split import SUB_ID_KEY, SplitImage, SwarpImageSplitter
-from mirar.processors.utils import (
-    CustomImageBatchModifier,
-    HeaderAnnotator,
-    HeaderEditor,
-    ImageBatcher,
-    ImageDebatcher,
-    ImageLoader,
-    ImagePlotter,
-    ImageRebatcher,
-    ImageRejector,
-    ImageSaver,
-    ImageSelector,
-    MEFLoader,
-    ModeMasker,
-    NanFiller,
-)
+from mirar.processors.split import SplitImage
+from mirar.processors.split import SUB_ID_KEY
+from mirar.processors.split import SwarpImageSplitter
+from mirar.processors.utils import CustomImageBatchModifier
+from mirar.processors.utils import HeaderAnnotator
+from mirar.processors.utils import HeaderEditor
+from mirar.processors.utils import ImageBatcher
+from mirar.processors.utils import ImageDebatcher
+from mirar.processors.utils import ImageLoader
+from mirar.processors.utils import ImagePlotter
+from mirar.processors.utils import ImageRebatcher
+from mirar.processors.utils import ImageRejector
+from mirar.processors.utils import ImageSaver
+from mirar.processors.utils import ImageSelector
+from mirar.processors.utils import MEFLoader
+from mirar.processors.utils import ModeMasker
+from mirar.processors.utils import NanFiller
 from mirar.processors.utils.cal_hunter import CalHunter
 from mirar.processors.xmatch import XMatch
 from mirar.processors.zogy.reference_aligner import AlignReference
-from mirar.processors.zogy.zogy import ZOGY, ZOGYPrepare
+from mirar.processors.zogy.zogy import ZOGY
+from mirar.processors.zogy.zogy import ZOGYPrepare
 
 build_test = [
     MEFLoader(
@@ -166,26 +157,24 @@ build_test = [
         load_image=load_winter_mef_image,
     ),
     ImageBatcher("UTCTIME"),
-    CSVLog(
-        export_keys=[
-            "UTCTIME",
-            "PROGNAME",
-            "TARGNAME",
-            DITHER_N_KEY,
-            MAX_DITHER_KEY,
-            "FILTER",
-            EXPTIME_KEY,
-            OBSCLASS_KEY,
-            "BOARD_ID",
-            "BASENAME",
-            TARGET_KEY,
-            "RADEG",
-            "DECDEG",
-            "T_ROIC",
-            "FIELDID",
-            "FOCPOS",
-        ]
-    ),
+    CSVLog(export_keys=[
+        "UTCTIME",
+        "PROGNAME",
+        "TARGNAME",
+        DITHER_N_KEY,
+        MAX_DITHER_KEY,
+        "FILTER",
+        EXPTIME_KEY,
+        OBSCLASS_KEY,
+        "BOARD_ID",
+        "BASENAME",
+        TARGET_KEY,
+        "RADEG",
+        "DECDEG",
+        "T_ROIC",
+        "FIELDID",
+        "FOCPOS",
+    ]),
     ImageSelector(
         ("BOARD_ID", "2"),
         (OBSCLASS_KEY, ["dark", "science"]),
@@ -227,42 +216,41 @@ load_raw = [
         input_sub_dir="raw",
         load_image=load_winter_mef_image,
     ),
-    CalHunter(
-        load_image=load_winter_mef_image, requirements=winter_cal_requirements
-    ),  # FIXME: add back in
+    CalHunter(load_image=load_winter_mef_image,
+              requirements=winter_cal_requirements),  # FIXME: add back in
 ]
 
 load_astrometry = [
-    ImageLoader(input_sub_dir="post_scamp", load_image=load_astrometried_winter_image)
+    ImageLoader(input_sub_dir="post_scamp",
+                load_image=load_astrometried_winter_image)
 ]
 
 extract_all = [
     ImageRebatcher("EXPID"),
-    DatabaseImageBatchInserter(db_table=Exposure, duplicate_protocol="replace"),
+    DatabaseImageBatchInserter(db_table=Exposure,
+                               duplicate_protocol="replace"),
 ]
 
 csvlog = [
-    CSVLog(
-        export_keys=[
-            "UTCTIME",
-            "PROGNAME",
-            DITHER_N_KEY,
-            MAX_DITHER_KEY,
-            "FILTER",
-            EXPTIME_KEY,
-            OBSCLASS_KEY,
-            "BOARD_ID",
-            "MIRCOVER",
-            "BASENAME",
-            TARGET_KEY,
-            "RADEG",
-            "DECDEG",
-            "T_ROIC",
-            "FIELDID",
-            "READOUTM",
-            "READOUTV",
-        ]
-    ),
+    CSVLog(export_keys=[
+        "UTCTIME",
+        "PROGNAME",
+        DITHER_N_KEY,
+        MAX_DITHER_KEY,
+        "FILTER",
+        EXPTIME_KEY,
+        OBSCLASS_KEY,
+        "BOARD_ID",
+        "MIRCOVER",
+        "BASENAME",
+        TARGET_KEY,
+        "RADEG",
+        "DECDEG",
+        "T_ROIC",
+        "FIELDID",
+        "READOUTM",
+        "READOUTV",
+    ]),
     ImageRebatcher(BASE_NAME_KEY),
 ]
 
@@ -271,9 +259,7 @@ select_split_subset = [ImageSelector(("SUBCOORD", "0_0"))]
 # Optional subset selection
 BOARD_ID = 4
 select_subset = [
-    ImageSelector(
-        ("BOARD_ID", str(BOARD_ID)),
-    ),
+    ImageSelector(("BOARD_ID", str(BOARD_ID)), ),
 ]
 
 select_ref = [
@@ -322,31 +308,30 @@ save_raw = [
 load_unpacked = [
     ImageLoader(input_sub_dir="raw_unpacked", input_img_dir=base_output_dir),
     ImageRebatcher("UTCTIME"),
-    CSVLog(
-        export_keys=[
-            "UTCTIME",
-            "PROGNAME",
-            DITHER_N_KEY,
-            MAX_DITHER_KEY,
-            "FILTER",
-            EXPTIME_KEY,
-            OBSCLASS_KEY,
-            "BOARD_ID",
-            "BASENAME",
-            TARGET_KEY,
-            "RADEG",
-            "DECDEG",
-            "T_ROIC",
-            "FIELDID",
-            "MEDCOUNT",
-        ]
-    ),
+    CSVLog(export_keys=[
+        "UTCTIME",
+        "PROGNAME",
+        DITHER_N_KEY,
+        MAX_DITHER_KEY,
+        "FILTER",
+        EXPTIME_KEY,
+        OBSCLASS_KEY,
+        "BOARD_ID",
+        "BASENAME",
+        TARGET_KEY,
+        "RADEG",
+        "DECDEG",
+        "T_ROIC",
+        "FIELDID",
+        "MEDCOUNT",
+    ]),
     ImageRebatcher(BASE_NAME_KEY),
 ]
 
-export_unpacked = [DatabaseImageInserter(db_table=Raw, duplicate_protocol="replace")]
+export_unpacked = [
+    DatabaseImageInserter(db_table=Raw, duplicate_protocol="replace")
+]
 load_and_export_unpacked = load_unpacked + export_unpacked
-
 
 # Detrend blocks
 
@@ -356,9 +341,9 @@ non_linear_correction = [
 ]
 
 dark_calibrate = [
-    ImageRebatcher(
-        ["BOARD_ID", EXPTIME_KEY, "SUBCOORD", "GAINCOLT", "GAINCOLB", "GAINROW"]
-    ),
+    ImageRebatcher([
+        "BOARD_ID", EXPTIME_KEY, "SUBCOORD", "GAINCOLT", "GAINCOLB", "GAINROW"
+    ]),
     DarkCalibrator(
         cache_sub_dir="calibration_darks",
         cache_image_name_header_keys=[EXPTIME_KEY, "BOARD_ID"],
@@ -379,17 +364,15 @@ flat_calibrate = [
     ),
     ImageSelector((OBSCLASS_KEY, ["science"])),
     ImageSaver(output_dir_name="domeflatcal"),
-    ImageRebatcher(
-        [
-            "BOARD_ID",
-            "FILTER",
-            "SUBCOORD",
-            "GAINCOLT",
-            "GAINCOLB",
-            "GAINROW",
-            TARGET_KEY,
-        ]
-    ),
+    ImageRebatcher([
+        "BOARD_ID",
+        "FILTER",
+        "SUBCOORD",
+        "GAINCOLT",
+        "GAINCOLB",
+        "GAINROW",
+        TARGET_KEY,
+    ]),
     FlatCalibrator(
         cache_sub_dir="sky_dither_flats",
         select_flat_images=select_winter_sky_flat_images,
@@ -438,7 +421,8 @@ astrometry = [
         catalog_purifier=winter_astrometry_sextractor_catalog_purifier,
     ),
     CustomImageBatchModifier(winter_astrometric_ref_catalog_namer),
-    ImageRebatcher([TARGET_KEY, "FILTER", EXPTIME_KEY, "BOARD_ID", "SUBCOORD"]),
+    ImageRebatcher([TARGET_KEY, "FILTER", EXPTIME_KEY, "BOARD_ID",
+                    "SUBCOORD"]),
     Scamp(
         scamp_config_path=scamp_config_path,
         ref_catalog_generator=winter_astrometric_ref_catalog_generator,
@@ -462,7 +446,8 @@ validate_astrometry = [
         cache=False,
         crossmatch_radius_arcsec=5.0,
     ),
-    DatabaseImageInserter(db_table=AstrometryStat, duplicate_protocol="ignore"),
+    DatabaseImageInserter(db_table=AstrometryStat,
+                          duplicate_protocol="ignore"),
     CustomImageBatchModifier(poor_astrometric_quality_rejector),
 ]
 
@@ -516,15 +501,15 @@ photcal_and_export = [
         write_regions=True,
         cache=True,
         zp_calculator=ZPWithColorTermCalculator(
-            color_colnames_guess_generator=winter_photcal_color_columns_generator,
+            color_colnames_guess_generator=
+            winter_photcal_color_columns_generator,
             reject_outliers=True,
             solver="curve_fit",
         ),
         zp_column_name="MAG_AUTO",
     ),
-    CatalogLimitingMagnitudeCalculator(
-        sextractor_mag_key_name="MAG_AUTO", write_regions=True
-    ),
+    CatalogLimitingMagnitudeCalculator(sextractor_mag_key_name="MAG_AUTO",
+                                       write_regions=True),
     AstrometryStatsWriter(
         ref_catalog_generator=winter_astrometric_ref_catalog_generator,
         image_catalog_purifier=winter_astrostat_catalog_purifier,
@@ -609,15 +594,15 @@ stack_stacks = [
         write_regions=True,
         cache=True,
         zp_calculator=ZPWithColorTermCalculator(
-            color_colnames_guess_generator=winter_photcal_color_columns_generator,
+            color_colnames_guess_generator=
+            winter_photcal_color_columns_generator,
             reject_outliers=True,
             solver="curve_fit",
         ),
         zp_column_name="MAG_AUTO",
     ),
-    CatalogLimitingMagnitudeCalculator(
-        sextractor_mag_key_name="MAG_AUTO", write_regions=True
-    ),
+    CatalogLimitingMagnitudeCalculator(sextractor_mag_key_name="MAG_AUTO",
+                                       write_regions=True),
     ImageSaver(output_dir_name="final_stack_of_stacks"),
 ]
 
@@ -691,9 +676,9 @@ imsub = [
         flux_key="FLUX_POINTSOURCE",
     ),
     # ImageSaver(output_dir_name="prezogy"),
-    ZOGY(
-        output_sub_dir="subtract", sci_zp_header_key="ZP_AUTO", ref_zp_header_key=ZP_KEY
-    ),
+    ZOGY(output_sub_dir="subtract",
+         sci_zp_header_key="ZP_AUTO",
+         ref_zp_header_key=ZP_KEY),
     ImageSaver(output_dir_name="diffs"),
     DatabaseImageInserter(db_table=Diff, duplicate_protocol="replace"),
     ImageSaver(output_dir_name="subtract"),
@@ -749,8 +734,7 @@ crossmatch_candidates = [
     XMatch(catalog=GaiaBright(num_sources=1, search_radius_arcmin=1.5)),
     XMatch(catalog=ZTF(num_sources=1, search_radius_arcmin=2.0 / 60.0)),
     CustomSourceTableModifier(
-        modifier_function=winter_candidate_avro_fields_calculator
-    ),
+        modifier_function=winter_candidate_avro_fields_calculator),
     SourceWriter(output_dir_name="kowalski"),
 ]
 
@@ -822,11 +806,13 @@ avro_write = [
 ]
 
 # configure to broadcast to IPAC
-BROADCAST_BOOL = str(os.getenv("BROADCAST_AVRO", None)) in ["True", "t", "1", "true"]
+BROADCAST_BOOL = str(os.getenv("BROADCAST_AVRO",
+                               None)) in ["True", "t", "1", "true"]
 
 avro_broadcast = [
     # Filter out low quality candidates
-    CustomSourceTableModifier(modifier_function=winter_candidate_quality_filterer),
+    CustomSourceTableModifier(
+        modifier_function=winter_candidate_quality_filterer),
     # Save candidates before sending to IPAC
     SourceWriter(output_dir_name="preskyportal"),
     # Only send a subset of the candidates to IPAC
@@ -849,7 +835,10 @@ avro_export = avro_write + avro_broadcast
 
 process_candidates = ml_classify + crossmatch_candidates + name_candidates + avro_write
 
-load_avro = [SourceLoader(input_dir_name="preavro"), SourceBatcher(BASE_NAME_KEY)]
+load_avro = [
+    SourceLoader(input_dir_name="preavro"),
+    SourceBatcher(BASE_NAME_KEY)
+]
 
 load_skyportal = [
     SourceLoader(input_dir_name="preskyportal"),
@@ -891,20 +880,13 @@ focus_subcoord = [
 # Combinations of different blocks, to be used in configurations
 process_and_stack = astrometry + validate_astrometry + stack_dithers
 
-unpack_subset = (
-    load_raw + extract_all + csvlog + select_subset + mask_and_split + save_raw
-)
+unpack_subset = (load_raw + extract_all + csvlog + select_subset +
+                 mask_and_split + save_raw)
 
 unpack_all = load_raw + extract_all + csvlog + mask_and_split + save_raw
 
-full_reduction = (
-    non_linear_correction
-    + dark_calibrate
-    + flat_calibrate
-    + fourier_filter
-    + process_and_stack
-    + photcal_and_export
-)
+full_reduction = (non_linear_correction + dark_calibrate + flat_calibrate +
+                  fourier_filter + process_and_stack + photcal_and_export)
 
 photcal_stacks = [
     ImageLoader(
@@ -916,20 +898,13 @@ photcal_stacks = [
 
 reduce_unpacked = load_and_export_unpacked + full_reduction
 
-reduce_unpacked_subset = (
-    load_unpacked + select_subset + export_unpacked + full_reduction
-)
+reduce_unpacked_subset = (load_unpacked + select_subset + export_unpacked +
+                          full_reduction)
 
 reduce = unpack_all + full_reduction
 
-reftest = (
-    unpack_subset
-    + dark_calibrate
-    + flat_calibrate
-    + process_and_stack
-    + select_ref
-    + refbuild
-)
+reftest = (unpack_subset + dark_calibrate + flat_calibrate +
+           process_and_stack + select_ref + refbuild)
 
 detrend_unpacked = load_and_export_unpacked + dark_calibrate + flat_calibrate
 
@@ -941,15 +916,8 @@ candidates = detect_candidates + process_candidates
 
 full = realtime + imsub
 
-focus_cals = (
-    load_raw
-    + extract_all
-    + mask
-    + focus_subcoord
-    + csvlog
-    + dark_calibrate
-    + flat_calibrate
-)
+focus_cals = (load_raw + extract_all + mask + focus_subcoord + csvlog +
+              dark_calibrate + flat_calibrate)
 
 stack_forced_photometry = [
     ImageRebatcher([BASE_NAME_KEY]),

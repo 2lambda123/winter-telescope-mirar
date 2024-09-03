@@ -1,7 +1,6 @@
 """
 Module for loading raw WINTER images and ensuring they have the correct format
 """
-
 import logging
 import os
 import warnings
@@ -14,36 +13,33 @@ from astropy.stats import sigma_clipped_stats
 from astropy.time import Time
 from astropy.utils.exceptions import AstropyWarning
 
-from mirar.data import Image, ImageBatch
-from mirar.io import (
-    ExtensionParsingError,
-    open_fits,
-    open_mef_fits,
-    open_mef_image,
-    open_raw_image,
-    tag_mef_extension_file_headers,
-)
-from mirar.paths import (
-    BASE_NAME_KEY,
-    COADD_KEY,
-    GAIN_KEY,
-    OBSCLASS_KEY,
-    PROC_FAIL_KEY,
-    PROC_HISTORY_KEY,
-    RAW_IMG_KEY,
-    SATURATE_KEY,
-    TARGET_KEY,
-    core_fields,
-)
-from mirar.pipelines.winter.constants import (
-    all_winter_board_ids,
-    imgtype_dict,
-    palomar_observer,
-    sncosmo_filters,
-    subdets,
-    winter_filters_map,
-)
-from mirar.pipelines.winter.models import DEFAULT_FIELD, default_program, itid_dict
+from mirar.data import Image
+from mirar.data import ImageBatch
+from mirar.io import ExtensionParsingError
+from mirar.io import open_fits
+from mirar.io import open_mef_fits
+from mirar.io import open_mef_image
+from mirar.io import open_raw_image
+from mirar.io import tag_mef_extension_file_headers
+from mirar.paths import BASE_NAME_KEY
+from mirar.paths import COADD_KEY
+from mirar.paths import core_fields
+from mirar.paths import GAIN_KEY
+from mirar.paths import OBSCLASS_KEY
+from mirar.paths import PROC_FAIL_KEY
+from mirar.paths import PROC_HISTORY_KEY
+from mirar.paths import RAW_IMG_KEY
+from mirar.paths import SATURATE_KEY
+from mirar.paths import TARGET_KEY
+from mirar.pipelines.winter.constants import all_winter_board_ids
+from mirar.pipelines.winter.constants import imgtype_dict
+from mirar.pipelines.winter.constants import palomar_observer
+from mirar.pipelines.winter.constants import sncosmo_filters
+from mirar.pipelines.winter.constants import subdets
+from mirar.pipelines.winter.constants import winter_filters_map
+from mirar.pipelines.winter.models import DEFAULT_FIELD
+from mirar.pipelines.winter.models import default_program
+from mirar.pipelines.winter.models import itid_dict
 from mirar.processors.skyportal import SNCOSMO_KEY
 from mirar.processors.utils.image_loader import BadImageError
 
@@ -51,12 +47,13 @@ logger = logging.getLogger(__name__)
 
 
 def clean_header(header: fits.Header) -> fits.Header:
-    """
-    Function to clean the header of an image, adding in missing keys and
+    """Function to clean the header of an image, adding in missing keys and
     correcting values where necessary
 
     :param header: Header to clean
-    :return: Updated header
+    :param header: fits.Header:
+    :returns: Updated header
+
     """
     header[GAIN_KEY] = 1.0
     header[SATURATE_KEY] = 40000.0
@@ -85,7 +82,9 @@ def clean_header(header: fits.Header) -> fits.Header:
             header[OBSCLASS_KEY] = "bias"
 
     if header["FILTERID"] == "dark":
-        if header[OBSCLASS_KEY] not in ["dark", "bias", "test", "science", "corrupted"]:
+        if header[OBSCLASS_KEY] not in [
+                "dark", "bias", "test", "science", "corrupted"
+        ]:
             header[OBSCLASS_KEY] = "test"
         elif header[OBSCLASS_KEY] not in ["corrupted"]:
             header[OBSCLASS_KEY] = "dark"
@@ -121,10 +120,8 @@ def clean_header(header: fits.Header) -> fits.Header:
                 bad_mirror_cover = True
 
         if bad_mirror_cover:
-            logger.error(
-                f"Bad MIRCOVER value: {header['MIRCOVER']} "
-                f"(img class={header[OBSCLASS_KEY]})"
-            )
+            logger.error(f"Bad MIRCOVER value: {header['MIRCOVER']} "
+                         f"(img class={header[OBSCLASS_KEY]})")
             header[OBSCLASS_KEY] = "corrupted"
 
     else:
@@ -146,13 +143,13 @@ def clean_header(header: fits.Header) -> fits.Header:
     # Currently they may not come
     # with the correct TARGET_KEY.
     if header[OBSCLASS_KEY].lower() in [
-        "dark",
-        "bias",
-        "focus",
-        "pointing",
-        "flat",
-        "test",
-        "corrupted",
+            "dark",
+            "bias",
+            "focus",
+            "pointing",
+            "flat",
+            "test",
+            "corrupted",
     ]:
         target = header[OBSCLASS_KEY].lower()
 
@@ -167,7 +164,8 @@ def clean_header(header: fits.Header) -> fits.Header:
     header["RA"] = header["RADEG"]
     header["DEC"] = header["DECDEG"]
 
-    header["EXPID"] = int((date_t.mjd - 59000.0) * 86400.0)  # seconds since 60000 MJD
+    # seconds since 60000 MJD
+    header["EXPID"] = int((date_t.mjd - 59000.0) * 86400.0)
 
     if COADD_KEY not in header.keys():
         logger.debug(f"No {COADD_KEY} entry. Setting coadds to 1.")
@@ -209,8 +207,7 @@ def clean_header(header: fits.Header) -> fits.Header:
     if len(header["PROGNAME"]) != 8:
         logger.warning(
             f"PROGNAME {header['PROGNAME']} is not 8 characters long. "
-            f"Replacing with default."
-        )
+            f"Replacing with default.")
         header["PROGNAME"] = default_program.progname
 
     with warnings.catch_warnings():
@@ -264,14 +261,13 @@ def clean_header(header: fits.Header) -> fits.Header:
     return header
 
 
-def load_winter_stack(
-    path: str | Path,
-) -> Image:
-    """
-    Load proc image
+def load_winter_stack(path: str | Path, ) -> Image:
+    """Load proc image
 
     :param path: Path to image
-    :return: data and header
+    :param path: str | Path:
+    :returns: data and header
+
     """
     logger.debug(f"Loading {path}")
     data, header = open_fits(path)
@@ -301,11 +297,12 @@ def load_winter_stack(
 
 
 def load_astrometried_winter_image(path: str | Path) -> Image:
-    """
-    Load astrometried image
+    """Load astrometried image
 
     :param path: Path to image
-    :return: Image object
+    :param path: str | Path:
+    :returns: Image object
+
     """
     logger.debug(f"Loading {path}")
     data, header = open_fits(path)
@@ -317,13 +314,13 @@ def load_astrometried_winter_image(path: str | Path) -> Image:
 
 
 def load_stacked_winter_image(
-    path: str | Path,
-) -> tuple[np.array, fits.Header]:
-    """
-    Load proc image
+    path: str | Path, ) -> tuple[np.array, fits.Header]:
+    """Load proc image
 
     :param path: Path to image
-    :return: data and header
+    :param path: str | Path:
+    :returns: data and header
+
     """
     logger.debug(f"Loading {path}")
     data, header = open_fits(path)
@@ -344,14 +341,13 @@ def load_stacked_winter_image(
     return data, header
 
 
-def load_test_winter_image(
-    path: str | Path,
-) -> Image:
-    """
-    Load test WINTER image
+def load_test_winter_image(path: str | Path, ) -> Image:
+    """Load test WINTER image
 
     :param path: Path to image
-    :return: Image object
+    :param path: str | Path:
+    :returns: Image object
+
     """
     image = open_raw_image(path)
     header = clean_header(image.header)
@@ -362,12 +358,14 @@ def load_test_winter_image(
 
 def load_raw_winter_mef(
     path: str,
-) -> tuple[astropy.io.fits.Header, list[np.array], list[astropy.io.fits.Header]]:
-    """
-    Load mef image.
+) -> tuple[astropy.io.fits.Header, list[np.array],
+           list[astropy.io.fits.Header]]:
+    """Load mef image.
 
     :param path: Path to image
-    :return: Primary header, list of data arrays, list of headers
+    :param path: str:
+    :returns: Primary header, list of data arrays, list of headers
+
     """
     primary_header, split_data, split_headers = open_mef_fits(path)
 
@@ -380,10 +378,8 @@ def load_raw_winter_mef(
     try:
         primary_header = clean_header(primary_header)
     except KeyError as exc:
-        logger.error(
-            f"Could not clean header for {path}: '{exc.args[0]}'. "
-            f"Marking as corrupted."
-        )
+        logger.error(f"Could not clean header for {path}: '{exc.args[0]}'. "
+                     f"Marking as corrupted.")
         corrupted = True
         try:
             primary_header["OBSTYPE"] = "CORRUPTED"
@@ -398,10 +394,8 @@ def load_raw_winter_mef(
             primary_header["EXPTIME"] = 0.0
 
             [date, time, milliseconds] = img_name.split("_")[1].split("-")
-            dateiso = (
-                f"{date[:4]}-{date[4:6]}-{date[6:]} "
-                f"{time[:2]}:{time[2:4]}:{time[4:6]}.{milliseconds}"
-            )
+            dateiso = (f"{date[:4]}-{date[4:6]}-{date[6:]} "
+                       f"{time[:2]}:{time[2:4]}:{time[4:6]}.{milliseconds}")
 
             primary_header["UTCISO"] = dateiso
             primary_header["TARGNAME"] = "CORRUPTED"
@@ -424,7 +418,8 @@ def load_raw_winter_mef(
         )
 
     except ExtensionParsingError:
-        logger.error(f"Could not parse extensions for {path}. Marking as corrupted.")
+        logger.error(
+            f"Could not parse extensions for {path}. Marking as corrupted.")
         corrupted = True
 
         split_headers = tag_mef_extension_file_headers(
@@ -454,25 +449,27 @@ def load_raw_winter_mef(
     return primary_header, split_data, split_headers
 
 
-def load_winter_mef_image(
-    path: str | Path,
-) -> list[Image]:
-    """
-    Function to load winter mef images
+def load_winter_mef_image(path: str | Path, ) -> list[Image]:
+    """Function to load winter mef images
 
     :param path: Path to image
-    :return: list of images
+    :param path: str | Path:
+    :returns: list of images
+
     """
-    images = open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
+    images = open_mef_image(path,
+                            load_raw_winter_mef,
+                            extension_key="BOARD_ID")
     return images
 
 
 def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
-    """
-    Annotate winter header with information on the subdetector
+    """Annotate winter header with information on the subdetector
 
     :param batch: ImageBatch to annotate
-    :return: ImageBatch where images have the updated header
+    :param batch: ImageBatch:
+    :returns: ImageBatch where images have the updated header
+
     """
     new_batch = []
     for image in batch:
@@ -491,19 +488,18 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
             image["SUBNYTOT"],
         )
 
-        mask = (
-            (subdets["nx"] == subnx)
-            & (subdets["ny"] == subny)
-            & (subdets["nxtot"] == subnxtot)
-            & (subdets["nytot"] == subnytot)
-            & (subdets["boardid"] == image["BOARD_ID"])
-        )
+        mask = ((subdets["nx"] == subnx)
+                & (subdets["ny"] == subny)
+                & (subdets["nxtot"] == subnxtot)
+                & (subdets["nytot"] == subnytot)
+                & (subdets["boardid"] == image["BOARD_ID"]))
         assert np.sum(mask) == 1, (
             f"Subdet not found for nx={subnx}, ny={subny}, "
             f"nxtot={subnxtot}, nytot={subnytot} and boardid={image['BOARD_ID']}"
         )
         image["SUBDETID"] = int(subdets[mask]["subdetid"].iloc[0])
-        image["RAWID"] = int(f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
+        image["RAWID"] = int(
+            f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
         image["USTACKID"] = None
 
         if "DATASEC" in image.keys():
@@ -518,8 +514,10 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
 
 
 def get_raw_winter_mask(image: Image) -> np.ndarray:
-    """
-    Get mask for raw winter image.
+    """Get mask for raw winter image.
+
+    :param image: Image:
+
     """
     data = image.get_data()
     header = image.header

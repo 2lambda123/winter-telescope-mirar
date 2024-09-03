@@ -1,7 +1,6 @@
 """
 Module for filling NaN values into an image
 """
-
 import logging
 
 import numpy as np
@@ -14,19 +13,23 @@ logger = logging.getLogger(__name__)
 
 
 class ModeMasker(BaseImageProcessor):
-    """
-    Processor to mask the most common value in an image
-    """
+    """Processor to mask the most common value in an image"""
 
     base_key = "modemask"
 
     def description(self):
+        """ """
         return "Processor to mask image pixels with very common values"
 
     def _apply_to_images(
         self,
         batch: ImageBatch,
     ) -> ImageBatch:
+        """
+
+        :param batch: ImageBatch:
+
+        """
 
         for image in batch:
             data = image.get_data()

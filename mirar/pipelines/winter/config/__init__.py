@@ -1,7 +1,6 @@
 """
 This file contains the configuration for the winter pipeline.
 """
-
 from pathlib import Path
 
 from fastavro.schema import load_schema
@@ -22,8 +21,7 @@ sextractor_astrometry_config = {
 
 sextractor_astromstats_config = sextractor_astrometry_config
 sextractor_astromstats_config["parameter_path"] = winter_file_dir.joinpath(
-    "astromstats.param"
-)
+    "astromstats.param")
 
 sextractor_photometry_config = {
     "config_path": winter_file_dir.joinpath("photomCat.sex"),
@@ -39,10 +37,11 @@ sextractor_photometry_psf_config = {
     "starnnw_path": winter_file_dir.joinpath("default.nnw"),
 }
 
-
 sextractor_anet_config = {
-    "config_path_boardid_1_5_6": winter_file_dir.joinpath("astrom_anet_1_5_6.sex"),
-    "config_path_boardid_2_3_4": winter_file_dir.joinpath("astrom_anet_2_3_4.sex"),
+    "config_path_boardid_1_5_6":
+    winter_file_dir.joinpath("astrom_anet_1_5_6.sex"),
+    "config_path_boardid_2_3_4":
+    winter_file_dir.joinpath("astrom_anet_2_3_4.sex"),
     "filter_path": winter_file_dir.joinpath("default.conv"),
     "parameter_path": winter_file_dir.joinpath("astrom.param"),
     "starnnw_path": winter_file_dir.joinpath("default.nnw"),
@@ -63,10 +62,14 @@ sextractor_reference_psf_phot_config = {
 }
 
 sextractor_candidate_config = {
-    "cand_det_sextractor_config": winter_file_dir.joinpath("candidate_detection.sex"),
-    "cand_det_sextractor_nnw": winter_file_dir.joinpath("default.nnw"),
-    "cand_det_sextractor_filter": winter_file_dir.joinpath("default.conv"),
-    "cand_det_sextractor_params": winter_file_dir.joinpath("Scorr.param"),
+    "cand_det_sextractor_config":
+    winter_file_dir.joinpath("candidate_detection.sex"),
+    "cand_det_sextractor_nnw":
+    winter_file_dir.joinpath("default.nnw"),
+    "cand_det_sextractor_filter":
+    winter_file_dir.joinpath("default.conv"),
+    "cand_det_sextractor_params":
+    winter_file_dir.joinpath("Scorr.param"),
 }
 
 swarp_config_path = winter_file_dir.joinpath("config.swarp")
@@ -88,36 +91,50 @@ winter_cal_requirements = [
             "5.0",  # Hs flats
         ],
     ),
-    CalRequirement(
-        target_name="flat", required_field="FILTER", required_values=["Y", "J", "H"]
-    ),
+    CalRequirement(target_name="flat",
+                   required_field="FILTER",
+                   required_values=["Y", "J", "H"]),
 ]
 
-winter_avro_schema_path = winter_file_dir.joinpath("avro_schema/winter.alert.avsc")
+winter_avro_schema_path = winter_file_dir.joinpath(
+    "avro_schema/winter.alert.avsc")
 winter_avro_schema = load_schema(winter_avro_schema_path)
-winter_prv_schema = winter_avro_schema["__named_schemas"]["winter.alert.prv_candidate"]
+winter_prv_schema = winter_avro_schema["__named_schemas"][
+    "winter.alert.prv_candidate"]
 prv_candidate_cols = [x["name"] for x in winter_prv_schema["fields"]]
 
 # To send to preview.fritz.science
 winter_preview_config = {
-    "origin": "mirar",
+    "origin":
+    "mirar",
     "group_ids": [1092],
-    "fritz_filter_id": 1018,
-    "instrument_id": 1066,
-    "stream_id": 1008,
-    "update_thumbnails": True,
-    "skyportal_client": SkyportalClient(base_url="https://preview.fritz.science/api/"),
+    "fritz_filter_id":
+    1018,
+    "instrument_id":
+    1066,
+    "stream_id":
+    1008,
+    "update_thumbnails":
+    True,
+    "skyportal_client":
+    SkyportalClient(base_url="https://preview.fritz.science/api/"),
 }
 
 # To send to fritz.science
 winter_fritz_config = {
-    "origin": "mirar",
+    "origin":
+    "mirar",
     "group_ids": [1657],
-    "fritz_filter_id": 1185,
-    "instrument_id": 1087,
-    "stream_id": 1005,
-    "update_thumbnails": True,
-    "skyportal_client": SkyportalClient(base_url="https://fritz.science/api/"),
+    "fritz_filter_id":
+    1185,
+    "instrument_id":
+    1087,
+    "stream_id":
+    1005,
+    "update_thumbnails":
+    True,
+    "skyportal_client":
+    SkyportalClient(base_url="https://fritz.science/api/"),
     "annotation_keys": [
         "rb",
         "chipsf",
