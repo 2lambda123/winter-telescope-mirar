@@ -119,7 +119,7 @@ class WINTERPipeline(Pipeline):
     def _load_raw_image(path: str) -> Image | list[Image]:
         """
 
-        :param path: str: 
+        :param path: str:
 
         """
         return open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
@@ -128,7 +128,7 @@ class WINTERPipeline(Pipeline):
     def download_raw_images_for_night(night: str):
         """
 
-        :param night: str: 
+        :param night: str:
 
         """
         download_via_ssh(

@@ -113,7 +113,7 @@ class BaseWFCAMQuery:
         """Run the query for the given image
 
         :param image: Image to query for
-        :param image: Image: 
+        :param image: Image:
         :returns: ImageBatch containing the queried images
 
         """
@@ -136,7 +136,7 @@ class WFAUQuery(BaseWFCAMQuery):
     mirar/pipelines/winter/models/ref_queries.py and
     mirar/pipelines/winter/models/ref_components.py to set up the tables in your
     database.
-    
+
     1. The user specifies an image and the filter to query and optionally the
     database details.
     2. The image is broken down into user-specified number of coordinates to get
@@ -256,9 +256,9 @@ class WFAUQuery(BaseWFCAMQuery):
 
         :param ra: RA of the coordinates
         :param dec: Dec of the coordinates
-        :param ra: float: 
-        :param dec: float) -> (list[MOCSurvey]: 
-        :param BaseWFAUClass: 
+        :param ra: float:
+        :param dec: float) -> (list[MOCSurvey]:
+        :param BaseWFAUClass:
         :returns: List of surveys that are available at the given coordinates
 
         """
@@ -289,8 +289,8 @@ class WFAUQuery(BaseWFCAMQuery):
         :param num_query_points: Number of points to use to define the query region.
         The image is divided into np.sqrt(num_query_points) x np.sqrt(num_query_points)
         regions.
-        :param header: fits.Header: 
-        :param num_query_points: int: 
+        :param header: fits.Header:
+        :param num_query_points: int:
         :returns: Tuple of lists of RA and Dec coordinates.
 
         """
@@ -303,7 +303,7 @@ class WFAUQuery(BaseWFCAMQuery):
         """Run the query to the WFAU database.
 
         :param image: Image to query around.
-        :param image: Image: 
+        :param image: Image:
         :returns: ImageBatch with the results of the query.
 
         """
@@ -451,7 +451,7 @@ class WFAUQuery(BaseWFCAMQuery):
         """Run the query on the UKIRT server.
 
         :param image: Image object with the coordinates of the image.
-        :param image: Image: 
+        :param image: Image:
         :returns: ImageBatch object with the downloaded images.
 
         """
@@ -489,11 +489,11 @@ def download_wfcam_archive_images(
     :param undeprecated_compids_file: Path to the file with the list of undeprecated
     component ids.
     :return imagepaths: List of paths to the downloaded images.
-    :param crd: SkyCoord: 
-    :param wfau_query: BaseWFAUClass: 
-    :param survey_name: str: 
-    :param waveband: str: 
-    :param save_dir_path: Path: 
+    :param crd: SkyCoord:
+    :param wfau_query: BaseWFAUClass:
+    :param survey_name: str:
+    :param waveband: str:
+    :param save_dir_path: Path:
     :param image_width: Quantity:  (Default value = wfau_image_width)
     :param image_height: Quantity:  (Default value = wfau_image_height)
     :param use_local_database: bool:  (Default value = False)
@@ -624,11 +624,11 @@ def check_query_exists_locally(
     :param query_table: table with query details
     :param components_table: table with component image details
     Returns:
-    :param query_ra: float: 
-    :param query_dec: float: 
-    :param query_filt: str: 
-    :param query_table: Type[BaseDB]: 
-    :param components_table: Type[BaseDB]: 
+    :param query_ra: float:
+    :param query_dec: float:
+    :param query_filt: str:
+    :param query_table: Type[BaseDB]:
+    :param components_table: Type[BaseDB]:
     :returns: list of savepaths
 
     """
@@ -685,12 +685,12 @@ def get_locally_existing_overlap_images(
     :param query_dec: dec that was queried
     :param query_filt: filter that was queried
     :param components_table: table with component image details
-    
+
     Returns:
-    :param query_ra: float: 
-    :param query_dec: float: 
-    :param query_filt: str: 
-    :param components_table: Type[BaseDB]: 
+    :param query_ra: float:
+    :param query_dec: float:
+    :param query_filt: str:
+    :param components_table: Type[BaseDB]:
     :returns: list of savepaths
 
     """
@@ -751,11 +751,11 @@ def check_multiframe_exists_locally(
     :param db_table: table with multiframe details
     :param multiframe_id: multiframe id
     :param extension_id: extension id
-    
+
     Returns:
-    :param db_table: Type[BaseDB]: 
-    :param multiframe_id: int: 
-    :param extension_id: int: 
+    :param db_table: Type[BaseDB]:
+    :param multiframe_id: int:
+    :param extension_id: int:
     :returns: list of savepaths
 
     """

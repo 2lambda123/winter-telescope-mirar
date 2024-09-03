@@ -26,7 +26,7 @@ class NanFiller(BaseImageProcessor):
     ) -> ImageBatch:
         """
 
-        :param batch: ImageBatch: 
+        :param batch: ImageBatch:
 
         """
 

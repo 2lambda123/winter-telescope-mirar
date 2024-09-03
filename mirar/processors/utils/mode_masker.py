@@ -27,7 +27,7 @@ class ModeMasker(BaseImageProcessor):
     ) -> ImageBatch:
         """
 
-        :param batch: ImageBatch: 
+        :param batch: ImageBatch:
 
         """
 

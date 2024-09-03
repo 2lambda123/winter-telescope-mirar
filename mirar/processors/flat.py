@@ -32,8 +32,8 @@ def get_convolution(data: np.ndarray, kernel_width: int) -> np.ndarray:
 
     :param data: Image data
     :param kernel_width: Width of the kernel (pixels)
-    :param data: np.ndarray: 
-    :param kernel_width: int: 
+    :param data: np.ndarray:
+    :param kernel_width: int:
     :returns: Smoothed image
 
     """
@@ -61,7 +61,7 @@ def default_select_flat(
     """Select images tagged as flat
 
     :param images: set of images
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
     :returns: subset of flat images
 
     """
@@ -108,7 +108,7 @@ class FlatCalibrator(ProcessorWithCache):
     ) -> ImageBatch:
         """
 
-        :param batch: ImageBatch: 
+        :param batch: ImageBatch:
 
         """
         master_flat = self.get_cache_file(batch)
@@ -133,7 +133,7 @@ class FlatCalibrator(ProcessorWithCache):
     ) -> Image:
         """
 
-        :param images: ImageBatch: 
+        :param images: ImageBatch:
 
         """
         images = self.select_cache_images(images)
@@ -263,7 +263,7 @@ class SkyFlatCalibrator(FlatCalibrator):
         """Select science images to use as sky flats
 
         :param images: set of images
-        :param images: ImageBatch: 
+        :param images: ImageBatch:
         :returns: subset of 'sky' images
 
         """

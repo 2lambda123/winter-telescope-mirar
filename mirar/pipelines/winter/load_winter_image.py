@@ -51,7 +51,7 @@ def clean_header(header: fits.Header) -> fits.Header:
     correcting values where necessary
 
     :param header: Header to clean
-    :param header: fits.Header: 
+    :param header: fits.Header:
     :returns: Updated header
 
     """
@@ -268,7 +268,7 @@ def load_winter_stack(
     """Load proc image
 
     :param path: Path to image
-    :param path: str | Path: 
+    :param path: str | Path:
     :returns: data and header
 
     """
@@ -303,7 +303,7 @@ def load_astrometried_winter_image(path: str | Path) -> Image:
     """Load astrometried image
 
     :param path: Path to image
-    :param path: str | Path: 
+    :param path: str | Path:
     :returns: Image object
 
     """
@@ -322,7 +322,7 @@ def load_stacked_winter_image(
     """Load proc image
 
     :param path: Path to image
-    :param path: str | Path: 
+    :param path: str | Path:
     :returns: data and header
 
     """
@@ -351,7 +351,7 @@ def load_test_winter_image(
     """Load test WINTER image
 
     :param path: Path to image
-    :param path: str | Path: 
+    :param path: str | Path:
     :returns: Image object
 
     """
@@ -368,7 +368,7 @@ def load_raw_winter_mef(
     """Load mef image.
 
     :param path: Path to image
-    :param path: str: 
+    :param path: str:
     :returns: Primary header, list of data arrays, list of headers
 
     """
@@ -463,7 +463,7 @@ def load_winter_mef_image(
     """Function to load winter mef images
 
     :param path: Path to image
-    :param path: str | Path: 
+    :param path: str | Path:
     :returns: list of images
 
     """
@@ -475,7 +475,7 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
     """Annotate winter header with information on the subdetector
 
     :param batch: ImageBatch to annotate
-    :param batch: ImageBatch: 
+    :param batch: ImageBatch:
     :returns: ImageBatch where images have the updated header
 
     """
@@ -525,7 +525,7 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
 def get_raw_winter_mask(image: Image) -> np.ndarray:
     """Get mask for raw winter image.
 
-    :param image: Image: 
+    :param image: Image:
 
     """
     data = image.get_data()

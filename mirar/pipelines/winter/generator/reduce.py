@@ -36,7 +36,7 @@ def winter_stackid_annotator(batch: ImageBatch) -> ImageBatch:
     images for which the stack was requested.
 
     :param batch: ImageBatch
-    :param batch: ImageBatch: 
+    :param batch: ImageBatch:
     :returns: ImageBatch with stackid added to the header
 
     """
@@ -54,7 +54,7 @@ winter_history_deprecated_constraint = DBQueryConstraints(
 def winter_fourier_filtered_image_generator(batch: ImageBatch) -> ImageBatch:
     """Generates a fourier filtered image for the winter data
 
-    :param batch: ImageBatch: 
+    :param batch: ImageBatch:
 
     """
     new_batch = []
@@ -85,7 +85,7 @@ def winter_fourier_filtered_image_generator(batch: ImageBatch) -> ImageBatch:
 def select_winter_sky_flat_images(images: ImageBatch) -> ImageBatch:
     """Selects the flat for the winter data, get the top 250 images sorted by median counts
 
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
 
     """
     flat_images, medcounts = [], []
@@ -115,7 +115,7 @@ def select_winter_sky_flat_images(images: ImageBatch) -> ImageBatch:
 def select_winter_flat_images(images: ImageBatch) -> ImageBatch:
     """Selects the flat for the winter data, get the top 250 images sorted by median counts
 
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
 
     """
     flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
@@ -125,7 +125,7 @@ def select_winter_flat_images(images: ImageBatch) -> ImageBatch:
 def select_winter_dome_flats_images(images: ImageBatch) -> ImageBatch:
     """Selects the flat for the winter data, get the top 250 images sorted by median counts
 
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
 
     """
     flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
@@ -139,7 +139,7 @@ def winter_master_flat_path_generator(images: ImageBatch) -> Path:
     """Generates a master flat path for the winter data
 
     :param images: return: Path to master flat
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
     :returns: Path to master flat
 
     """
@@ -161,7 +161,7 @@ def winter_master_flat_path_generator(images: ImageBatch) -> Path:
 def winter_anet_sextractor_config_path_generator(image: Image) -> str:
     """Generates the sextractor config file path for the winter image
 
-    :param image: Image: 
+    :param image: Image:
 
     """
     if image["BOARD_ID"] in [1, 5, 6]:
@@ -174,8 +174,8 @@ def winter_imsub_catalog_purifier(sci_catalog: Table, ref_catalog: Table):
     """
 
     :param sci_catalog: param ref_catalog:
-    :param sci_catalog: Table: 
-    :param ref_catalog: Table: 
+    :param sci_catalog: Table:
+    :param ref_catalog: Table:
 
     """
     good_sci_sources = (
@@ -205,7 +205,7 @@ def mask_stamps_around_bright_stars(image: Image):
     """Masks the stamps around bright stars in the image
 
     :param image: return: masked image
-    :param image: Image: 
+    :param image: Image:
     :returns: masked image
 
     """
@@ -240,7 +240,7 @@ def winter_boardid_6_demasker(images: ImageBatch) -> ImageBatch:
     distributed across the image well, producing a fully masked image.
 
     :param images: ImageBatch
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
     :returns: ImageBatch
 
     """

@@ -7,7 +7,7 @@ def apply_winter_nlc(images: ImageBatch) -> ImageBatch:
     """Apply WINTER non-linear correction to images
 
     :param images: ImageBatch to apply non-linear correction to
-    :param images: ImageBatch: 
+    :param images: ImageBatch:
     :returns: Corrected ImageBatch
 
     """
