@@ -1,7 +1,6 @@
 """
 Module for loading raw WINTER images and ensuring they have the correct format
 """
-
 import logging
 import os
 import warnings
@@ -14,36 +13,33 @@ from astropy.stats import sigma_clipped_stats
 from astropy.time import Time
 from astropy.utils.exceptions import AstropyWarning
 
-from mirar.data import Image, ImageBatch
-from mirar.io import (
-    ExtensionParsingError,
-    open_fits,
-    open_mef_fits,
-    open_mef_image,
-    open_raw_image,
-    tag_mef_extension_file_headers,
-)
-from mirar.paths import (
-    BASE_NAME_KEY,
-    COADD_KEY,
-    GAIN_KEY,
-    OBSCLASS_KEY,
-    PROC_FAIL_KEY,
-    PROC_HISTORY_KEY,
-    RAW_IMG_KEY,
-    SATURATE_KEY,
-    TARGET_KEY,
-    core_fields,
-)
-from mirar.pipelines.winter.constants import (
-    all_winter_board_ids,
-    imgtype_dict,
-    palomar_observer,
-    sncosmo_filters,
-    subdets,
-    winter_filters_map,
-)
-from mirar.pipelines.winter.models import DEFAULT_FIELD, default_program, itid_dict
+from mirar.data import Image
+from mirar.data import ImageBatch
+from mirar.io import ExtensionParsingError
+from mirar.io import open_fits
+from mirar.io import open_mef_fits
+from mirar.io import open_mef_image
+from mirar.io import open_raw_image
+from mirar.io import tag_mef_extension_file_headers
+from mirar.paths import BASE_NAME_KEY
+from mirar.paths import COADD_KEY
+from mirar.paths import core_fields
+from mirar.paths import GAIN_KEY
+from mirar.paths import OBSCLASS_KEY
+from mirar.paths import PROC_FAIL_KEY
+from mirar.paths import PROC_HISTORY_KEY
+from mirar.paths import RAW_IMG_KEY
+from mirar.paths import SATURATE_KEY
+from mirar.paths import TARGET_KEY
+from mirar.pipelines.winter.constants import all_winter_board_ids
+from mirar.pipelines.winter.constants import imgtype_dict
+from mirar.pipelines.winter.constants import palomar_observer
+from mirar.pipelines.winter.constants import sncosmo_filters
+from mirar.pipelines.winter.constants import subdets
+from mirar.pipelines.winter.constants import winter_filters_map
+from mirar.pipelines.winter.models import DEFAULT_FIELD
+from mirar.pipelines.winter.models import default_program
+from mirar.pipelines.winter.models import itid_dict
 from mirar.processors.skyportal import SNCOSMO_KEY
 from mirar.processors.utils.image_loader import BadImageError
 

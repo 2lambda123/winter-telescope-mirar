@@ -1,105 +1,100 @@
 """
 Module for WINTER data reduction
 """
-
 # pylint: disable=duplicate-code
 import os
 
 from winterrb.model import WINTERNet
 
-from mirar.catalog.kowalski import PS1, PS1STRM, TMASS, ZTF, Gaia, GaiaBright, PS1SGSc
+from mirar.catalog.kowalski import Gaia
+from mirar.catalog.kowalski import GaiaBright
+from mirar.catalog.kowalski import PS1
+from mirar.catalog.kowalski import PS1SGSc
+from mirar.catalog.kowalski import PS1STRM
+from mirar.catalog.kowalski import TMASS
+from mirar.catalog.kowalski import ZTF
 from mirar.downloader.get_test_data import get_test_data_dir
-from mirar.paths import (
-    BASE_NAME_KEY,
-    DITHER_N_KEY,
-    EXPTIME_KEY,
-    LATEST_SAVE_KEY,
-    MAX_DITHER_KEY,
-    OBSCLASS_KEY,
-    PROC_HISTORY_KEY,
-    RAW_IMG_KEY,
-    SOURCE_HISTORY_KEY,
-    SOURCE_NAME_KEY,
-    TARGET_KEY,
-    ZP_KEY,
-    base_output_dir,
-)
-from mirar.pipelines.winter.config import (
-    prv_candidate_cols,
-    psfex_path,
-    scamp_config_path,
-    sextractor_astrometry_config,
-    sextractor_astromstats_config,
-    sextractor_candidate_config,
-    sextractor_photometry_config,
-    sextractor_photometry_psf_config,
-    sextractor_reference_psf_phot_config,
-    swarp_config_path,
-    winter_avro_schema_path,
-    winter_cal_requirements,
-    winter_fritz_config,
-)
-from mirar.pipelines.winter.constants import NXSPLIT, NYSPLIT
-from mirar.pipelines.winter.generator import (
-    apply_rb_to_table,
-    mask_stamps_around_bright_stars,
-    select_winter_dome_flats_images,
-    select_winter_flat_images,
-    select_winter_sky_flat_images,
-    winter_anet_sextractor_config_path_generator,
-    winter_astrometric_ref_catalog_generator,
-    winter_astrometric_ref_catalog_namer,
-    winter_astrometry_sextractor_catalog_purifier,
-    winter_astrostat_catalog_purifier,
-    winter_boardid_6_demasker,
-    winter_candidate_annotator_filterer,
-    winter_candidate_avro_fields_calculator,
-    winter_candidate_quality_filterer,
-    winter_fourier_filtered_image_generator,
-    winter_history_deprecated_constraint,
-    winter_imsub_catalog_purifier,
-    winter_new_source_updater,
-    winter_photcal_color_columns_generator,
-    winter_photometric_catalog_generator,
-    winter_photometric_catalogs_purifier,
-    winter_photometric_ref_catalog_namer,
-    winter_reference_generator,
-    winter_reference_image_resampler_for_zogy,
-    winter_reference_psf_phot_sextractor,
-    winter_reference_psfex,
-    winter_reference_sextractor,
-    winter_skyportal_annotator,
-    winter_source_entry_updater,
-    winter_stackid_annotator,
-)
-from mirar.pipelines.winter.load_winter_image import (
-    annotate_winter_subdet_headers,
-    get_raw_winter_mask,
-    load_astrometried_winter_image,
-    load_stacked_winter_image,
-    load_test_winter_image,
-    load_winter_mef_image,
-    load_winter_stack,
-)
-from mirar.pipelines.winter.models import (
-    DEFAULT_FIELD,
-    NAME_START,
-    SOURCE_PREFIX,
-    AstrometryStat,
-    Candidate,
-    Diff,
-    Exposure,
-    Raw,
-    Source,
-    Stack,
-)
+from mirar.paths import BASE_NAME_KEY
+from mirar.paths import base_output_dir
+from mirar.paths import DITHER_N_KEY
+from mirar.paths import EXPTIME_KEY
+from mirar.paths import LATEST_SAVE_KEY
+from mirar.paths import MAX_DITHER_KEY
+from mirar.paths import OBSCLASS_KEY
+from mirar.paths import PROC_HISTORY_KEY
+from mirar.paths import RAW_IMG_KEY
+from mirar.paths import SOURCE_HISTORY_KEY
+from mirar.paths import SOURCE_NAME_KEY
+from mirar.paths import TARGET_KEY
+from mirar.paths import ZP_KEY
+from mirar.pipelines.winter.config import prv_candidate_cols
+from mirar.pipelines.winter.config import psfex_path
+from mirar.pipelines.winter.config import scamp_config_path
+from mirar.pipelines.winter.config import sextractor_astrometry_config
+from mirar.pipelines.winter.config import sextractor_astromstats_config
+from mirar.pipelines.winter.config import sextractor_candidate_config
+from mirar.pipelines.winter.config import sextractor_photometry_config
+from mirar.pipelines.winter.config import sextractor_photometry_psf_config
+from mirar.pipelines.winter.config import sextractor_reference_psf_phot_config
+from mirar.pipelines.winter.config import swarp_config_path
+from mirar.pipelines.winter.config import winter_avro_schema_path
+from mirar.pipelines.winter.config import winter_cal_requirements
+from mirar.pipelines.winter.config import winter_fritz_config
+from mirar.pipelines.winter.constants import NXSPLIT
+from mirar.pipelines.winter.constants import NYSPLIT
+from mirar.pipelines.winter.generator import apply_rb_to_table
+from mirar.pipelines.winter.generator import mask_stamps_around_bright_stars
+from mirar.pipelines.winter.generator import select_winter_dome_flats_images
+from mirar.pipelines.winter.generator import select_winter_flat_images
+from mirar.pipelines.winter.generator import select_winter_sky_flat_images
+from mirar.pipelines.winter.generator import winter_anet_sextractor_config_path_generator
+from mirar.pipelines.winter.generator import winter_astrometric_ref_catalog_generator
+from mirar.pipelines.winter.generator import winter_astrometric_ref_catalog_namer
+from mirar.pipelines.winter.generator import winter_astrometry_sextractor_catalog_purifier
+from mirar.pipelines.winter.generator import winter_astrostat_catalog_purifier
+from mirar.pipelines.winter.generator import winter_boardid_6_demasker
+from mirar.pipelines.winter.generator import winter_candidate_annotator_filterer
+from mirar.pipelines.winter.generator import winter_candidate_avro_fields_calculator
+from mirar.pipelines.winter.generator import winter_candidate_quality_filterer
+from mirar.pipelines.winter.generator import winter_fourier_filtered_image_generator
+from mirar.pipelines.winter.generator import winter_history_deprecated_constraint
+from mirar.pipelines.winter.generator import winter_imsub_catalog_purifier
+from mirar.pipelines.winter.generator import winter_new_source_updater
+from mirar.pipelines.winter.generator import winter_photcal_color_columns_generator
+from mirar.pipelines.winter.generator import winter_photometric_catalog_generator
+from mirar.pipelines.winter.generator import winter_photometric_catalogs_purifier
+from mirar.pipelines.winter.generator import winter_photometric_ref_catalog_namer
+from mirar.pipelines.winter.generator import winter_reference_generator
+from mirar.pipelines.winter.generator import winter_reference_image_resampler_for_zogy
+from mirar.pipelines.winter.generator import winter_reference_psf_phot_sextractor
+from mirar.pipelines.winter.generator import winter_reference_psfex
+from mirar.pipelines.winter.generator import winter_reference_sextractor
+from mirar.pipelines.winter.generator import winter_skyportal_annotator
+from mirar.pipelines.winter.generator import winter_source_entry_updater
+from mirar.pipelines.winter.generator import winter_stackid_annotator
+from mirar.pipelines.winter.load_winter_image import annotate_winter_subdet_headers
+from mirar.pipelines.winter.load_winter_image import get_raw_winter_mask
+from mirar.pipelines.winter.load_winter_image import load_astrometried_winter_image
+from mirar.pipelines.winter.load_winter_image import load_stacked_winter_image
+from mirar.pipelines.winter.load_winter_image import load_test_winter_image
+from mirar.pipelines.winter.load_winter_image import load_winter_mef_image
+from mirar.pipelines.winter.load_winter_image import load_winter_stack
+from mirar.pipelines.winter.models import AstrometryStat
+from mirar.pipelines.winter.models import Candidate
+from mirar.pipelines.winter.models import DEFAULT_FIELD
+from mirar.pipelines.winter.models import Diff
+from mirar.pipelines.winter.models import Exposure
+from mirar.pipelines.winter.models import NAME_START
+from mirar.pipelines.winter.models import Raw
+from mirar.pipelines.winter.models import Source
+from mirar.pipelines.winter.models import SOURCE_PREFIX
+from mirar.pipelines.winter.models import Stack
 from mirar.pipelines.winter.nlc import apply_winter_nlc
-from mirar.pipelines.winter.validator import (
-    masked_images_rejector,
-    poor_astrometric_quality_rejector,
-    winter_dark_oversubtraction_rejector,
-)
-from mirar.processors.astromatic import PSFex, Scamp
+from mirar.pipelines.winter.validator import masked_images_rejector
+from mirar.pipelines.winter.validator import poor_astrometric_quality_rejector
+from mirar.pipelines.winter.validator import winter_dark_oversubtraction_rejector
+from mirar.processors.astromatic import PSFex
+from mirar.processors.astromatic import Scamp
 from mirar.processors.astromatic.sextractor.background_subtractor import (
     SextractorBkgSubtractor,
 )
@@ -111,54 +106,51 @@ from mirar.processors.avro import IPACAvroExporter
 from mirar.processors.catalog_limiting_mag import CatalogLimitingMagnitudeCalculator
 from mirar.processors.csvlog import CSVLog
 from mirar.processors.dark import DarkCalibrator
-from mirar.processors.database.database_inserter import (
-    DatabaseImageBatchInserter,
-    DatabaseImageInserter,
-    DatabaseSourceInserter,
-)
+from mirar.processors.database.database_inserter import DatabaseImageBatchInserter
+from mirar.processors.database.database_inserter import DatabaseImageInserter
+from mirar.processors.database.database_inserter import DatabaseSourceInserter
 from mirar.processors.database.database_selector import SelectSourcesWithMetadata
 from mirar.processors.database.database_updater import ImageDatabaseMultiEntryUpdater
 from mirar.processors.flat import FlatCalibrator
-from mirar.processors.mask import (  # MaskAboveThreshold,
-    MaskDatasecPixels,
-    MaskPixelsFromFunction,
-)
+from mirar.processors.mask import MaskDatasecPixels
+from mirar.processors.mask import MaskPixelsFromFunction
 from mirar.processors.photcal import ZPWithColorTermCalculator
 from mirar.processors.photcal.photcalibrator import PhotCalibrator
-from mirar.processors.photometry import AperturePhotometry, PSFPhotometry
-from mirar.processors.reference import GetReferenceImage, ProcessReference
+from mirar.processors.photometry import AperturePhotometry
+from mirar.processors.photometry import PSFPhotometry
+from mirar.processors.reference import GetReferenceImage
+from mirar.processors.reference import ProcessReference
 from mirar.processors.skyportal.skyportal_candidate import SkyportalCandidateUploader
-from mirar.processors.sources import (
-    CandidateNamer,
-    CustomSourceTableModifier,
-    ForcedPhotometryDetector,
-    SourceBatcher,
-    SourceLoader,
-    SourceWriter,
-    ZOGYSourceDetector,
-)
+from mirar.processors.sources import CandidateNamer
+from mirar.processors.sources import CustomSourceTableModifier
+from mirar.processors.sources import ForcedPhotometryDetector
+from mirar.processors.sources import SourceBatcher
+from mirar.processors.sources import SourceLoader
+from mirar.processors.sources import SourceWriter
+from mirar.processors.sources import ZOGYSourceDetector
 from mirar.processors.sources.machine_learning import Pytorch
-from mirar.processors.split import SUB_ID_KEY, SplitImage, SwarpImageSplitter
-from mirar.processors.utils import (
-    CustomImageBatchModifier,
-    HeaderAnnotator,
-    HeaderEditor,
-    ImageBatcher,
-    ImageDebatcher,
-    ImageLoader,
-    ImagePlotter,
-    ImageRebatcher,
-    ImageRejector,
-    ImageSaver,
-    ImageSelector,
-    MEFLoader,
-    ModeMasker,
-    NanFiller,
-)
+from mirar.processors.split import SplitImage
+from mirar.processors.split import SUB_ID_KEY
+from mirar.processors.split import SwarpImageSplitter
+from mirar.processors.utils import CustomImageBatchModifier
+from mirar.processors.utils import HeaderAnnotator
+from mirar.processors.utils import HeaderEditor
+from mirar.processors.utils import ImageBatcher
+from mirar.processors.utils import ImageDebatcher
+from mirar.processors.utils import ImageLoader
+from mirar.processors.utils import ImagePlotter
+from mirar.processors.utils import ImageRebatcher
+from mirar.processors.utils import ImageRejector
+from mirar.processors.utils import ImageSaver
+from mirar.processors.utils import ImageSelector
+from mirar.processors.utils import MEFLoader
+from mirar.processors.utils import ModeMasker
+from mirar.processors.utils import NanFiller
 from mirar.processors.utils.cal_hunter import CalHunter
 from mirar.processors.xmatch import XMatch
 from mirar.processors.zogy.reference_aligner import AlignReference
-from mirar.processors.zogy.zogy import ZOGY, ZOGYPrepare
+from mirar.processors.zogy.zogy import ZOGY
+from mirar.processors.zogy.zogy import ZOGYPrepare
 
 build_test = [
     MEFLoader(

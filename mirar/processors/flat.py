@@ -1,7 +1,6 @@
 """
 Module containing processors for flat calibration
 """
-
 import logging
 import os.path
 import sys
@@ -9,19 +8,20 @@ from collections.abc import Callable
 from copy import copy
 
 import numpy as np
-from astropy.convolution import Tophat2DKernel, convolve_fft
+from astropy.convolution import convolve_fft
+from astropy.convolution import Tophat2DKernel
 
-from mirar.data import Image, ImageBatch
+from mirar.data import Image
+from mirar.data import ImageBatch
 from mirar.errors import ImageNotFoundError
-from mirar.paths import (
-    BASE_NAME_KEY,
-    COADD_KEY,
-    EXPTIME_KEY,
-    FLAT_FRAME_KEY,
-    LATEST_SAVE_KEY,
-    OBSCLASS_KEY,
-)
-from mirar.processors.base_processor import ProcessorPremadeCache, ProcessorWithCache
+from mirar.paths import BASE_NAME_KEY
+from mirar.paths import COADD_KEY
+from mirar.paths import EXPTIME_KEY
+from mirar.paths import FLAT_FRAME_KEY
+from mirar.paths import LATEST_SAVE_KEY
+from mirar.paths import OBSCLASS_KEY
+from mirar.processors.base_processor import ProcessorPremadeCache
+from mirar.processors.base_processor import ProcessorWithCache
 from mirar.processors.utils.image_selector import select_from_images
 
 logger = logging.getLogger(__name__)

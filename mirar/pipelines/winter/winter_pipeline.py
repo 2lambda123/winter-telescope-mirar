@@ -1,55 +1,53 @@
 """
 Module with pipeline for building reference images in the IR from WFAU
 """
-
 import logging
 
 from mirar.data import Image
 from mirar.downloader.caltech import download_via_ssh
 from mirar.io import open_mef_image
 from mirar.pipelines.base_pipeline import Pipeline
-from mirar.pipelines.winter.blocks import (
-    astrometry,
-    avro_broadcast,
-    avro_export,
-    build_test,
-    csvlog,
-    detect_candidates,
-    detrend_unpacked,
-    diff_forced_photometry,
-    extract_all,
-    focus_cals,
-    full_reduction,
-    imsub,
-    load_avro,
-    load_calibrated,
-    load_final_stack,
-    load_raw,
-    load_skyportal,
-    load_sources,
-    load_test,
-    mask_and_split,
-    mosaic,
-    only_ref,
-    photcal_stacks,
-    plot_stack,
-    process_candidates,
-    realtime,
-    reduce,
-    reduce_unpacked,
-    reduce_unpacked_subset,
-    refbuild,
-    reftest,
-    remask,
-    save_raw,
-    select_split_subset,
-    send_to_skyportal,
-    stack_forced_photometry,
-    stack_stacks,
-    unpack_all,
-    unpack_subset,
-)
-from mirar.pipelines.winter.config import PIPELINE_NAME, winter_cal_requirements
+from mirar.pipelines.winter.blocks import astrometry
+from mirar.pipelines.winter.blocks import avro_broadcast
+from mirar.pipelines.winter.blocks import avro_export
+from mirar.pipelines.winter.blocks import build_test
+from mirar.pipelines.winter.blocks import csvlog
+from mirar.pipelines.winter.blocks import detect_candidates
+from mirar.pipelines.winter.blocks import detrend_unpacked
+from mirar.pipelines.winter.blocks import diff_forced_photometry
+from mirar.pipelines.winter.blocks import extract_all
+from mirar.pipelines.winter.blocks import focus_cals
+from mirar.pipelines.winter.blocks import full_reduction
+from mirar.pipelines.winter.blocks import imsub
+from mirar.pipelines.winter.blocks import load_avro
+from mirar.pipelines.winter.blocks import load_calibrated
+from mirar.pipelines.winter.blocks import load_final_stack
+from mirar.pipelines.winter.blocks import load_raw
+from mirar.pipelines.winter.blocks import load_skyportal
+from mirar.pipelines.winter.blocks import load_sources
+from mirar.pipelines.winter.blocks import load_test
+from mirar.pipelines.winter.blocks import mask_and_split
+from mirar.pipelines.winter.blocks import mosaic
+from mirar.pipelines.winter.blocks import only_ref
+from mirar.pipelines.winter.blocks import photcal_stacks
+from mirar.pipelines.winter.blocks import plot_stack
+from mirar.pipelines.winter.blocks import process_candidates
+from mirar.pipelines.winter.blocks import realtime
+from mirar.pipelines.winter.blocks import reduce
+from mirar.pipelines.winter.blocks import reduce_unpacked
+from mirar.pipelines.winter.blocks import reduce_unpacked_subset
+from mirar.pipelines.winter.blocks import refbuild
+from mirar.pipelines.winter.blocks import reftest
+from mirar.pipelines.winter.blocks import remask
+from mirar.pipelines.winter.blocks import save_raw
+from mirar.pipelines.winter.blocks import select_split_subset
+from mirar.pipelines.winter.blocks import send_to_skyportal
+from mirar.pipelines.winter.blocks import stack_forced_photometry
+from mirar.pipelines.winter.blocks import stack_stacks
+from mirar.pipelines.winter.blocks import unpack_all
+from mirar.pipelines.winter.blocks import unpack_subset
+from mirar.pipelines.winter.config import PIPELINE_NAME
+from mirar.pipelines.winter.config import winter_cal_requirements
 from mirar.pipelines.winter.load_winter_image import load_raw_winter_mef
 from mirar.pipelines.winter.models import set_up_winter_databases
 

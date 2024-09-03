@@ -1,7 +1,6 @@
 """
 Module with generators for WINTER pipeline
 """
-
 import logging
 from pathlib import Path
 
@@ -10,16 +9,15 @@ from astropy.coordinates import SkyCoord
 from astropy.table import Table
 from astropy.wcs import WCS
 
-from mirar.data import Image, ImageBatch
+from mirar.data import Image
+from mirar.data import ImageBatch
 from mirar.database.constraints import DBQueryConstraints
 from mirar.errors.exceptions import ProcessorError
-from mirar.paths import (
-    FILTER_KEY,
-    OBSCLASS_KEY,
-    REF_CAT_PATH_KEY,
-    SATURATE_KEY,
-    get_output_dir,
-)
+from mirar.paths import FILTER_KEY
+from mirar.paths import get_output_dir
+from mirar.paths import OBSCLASS_KEY
+from mirar.paths import REF_CAT_PATH_KEY
+from mirar.paths import SATURATE_KEY
 from mirar.pipelines.winter.config import sextractor_anet_config
 from mirar.pipelines.winter.fourier_bkg_model import subtract_fourier_background_model
 from mirar.processors.split import SUB_ID_KEY

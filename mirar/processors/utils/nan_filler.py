@@ -1,7 +1,6 @@
 """
 Module for filling NaN values in an image
 """
-
 import logging
 
 import numpy as np

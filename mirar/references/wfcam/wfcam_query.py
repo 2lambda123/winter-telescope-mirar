@@ -3,11 +3,11 @@ Module to query for WFCAM images.
 You can either query the online WFAU archive, or query a local database to get
 component images.
 """
-
 import logging
 import warnings
 from pathlib import Path
-from typing import Callable, Type
+from typing import Callable
+from typing import Type
 from urllib.error import HTTPError
 
 import numpy as np
@@ -23,31 +23,33 @@ from astroquery.vsa import VsaClass
 from astroquery.wfau import BaseWFAUClass
 from astrosurveyutils.surveys import MOCSurvey
 
-from mirar.data import Image, ImageBatch
-from mirar.data.utils import check_coords_within_image, get_image_center_wcs_coords
+from mirar.data import Image
+from mirar.data import ImageBatch
+from mirar.data.utils import check_coords_within_image
+from mirar.data.utils import get_image_center_wcs_coords
 from mirar.database.base_model import BaseDB
 from mirar.database.constraints import DBQueryConstraints
 from mirar.database.transactions import select_from_table
 from mirar.errors import ProcessorError
 from mirar.io import open_raw_image
-from mirar.paths import LATEST_SAVE_KEY, get_output_dir, get_output_path
+from mirar.paths import get_output_dir
+from mirar.paths import get_output_path
+from mirar.paths import LATEST_SAVE_KEY
 from mirar.processors.database import DatabaseImageInserter
 from mirar.references.wfcam.files import wfcam_undeprecated_compid_file
-from mirar.references.wfcam.utils import (
-    COMPID_KEY,
-    EXTENSION_ID_KEY,
-    MULTIFRAME_ID_KEY,
-    QUERY_DEC_KEY,
-    QUERY_FILT_KEY,
-    QUERY_RA_KEY,
-    find_wfcam_surveys,
-    get_query_coordinates_from_header,
-    get_wfcam_basename,
-    get_wfcam_file_identifiers_from_url,
-    make_wfcam_image_from_hdulist,
-    open_compressed_wfcam_fits,
-    save_wfcam_as_compressed_fits,
-)
+from mirar.references.wfcam.utils import COMPID_KEY
+from mirar.references.wfcam.utils import EXTENSION_ID_KEY
+from mirar.references.wfcam.utils import find_wfcam_surveys
+from mirar.references.wfcam.utils import get_query_coordinates_from_header
+from mirar.references.wfcam.utils import get_wfcam_basename
+from mirar.references.wfcam.utils import get_wfcam_file_identifiers_from_url
+from mirar.references.wfcam.utils import make_wfcam_image_from_hdulist
+from mirar.references.wfcam.utils import MULTIFRAME_ID_KEY
+from mirar.references.wfcam.utils import open_compressed_wfcam_fits
+from mirar.references.wfcam.utils import QUERY_DEC_KEY
+from mirar.references.wfcam.utils import QUERY_FILT_KEY
+from mirar.references.wfcam.utils import QUERY_RA_KEY
+from mirar.references.wfcam.utils import save_wfcam_as_compressed_fits
 
 logger = logging.getLogger(__name__)
 

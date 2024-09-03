@@ -1,7 +1,6 @@
 """
 This file contains the configuration for the winter pipeline.
 """
-
 from pathlib import Path
 
 from fastavro.schema import load_schema
