@@ -82,7 +82,9 @@ def clean_header(header: fits.Header) -> fits.Header:
             header[OBSCLASS_KEY] = "bias"
 
     if header["FILTERID"] == "dark":
-        if header[OBSCLASS_KEY] not in ["dark", "bias", "test", "science", "corrupted"]:
+        if header[OBSCLASS_KEY] not in [
+                "dark", "bias", "test", "science", "corrupted"
+        ]:
             header[OBSCLASS_KEY] = "test"
         elif header[OBSCLASS_KEY] not in ["corrupted"]:
             header[OBSCLASS_KEY] = "dark"
@@ -118,10 +120,8 @@ def clean_header(header: fits.Header) -> fits.Header:
                 bad_mirror_cover = True
 
         if bad_mirror_cover:
-            logger.error(
-                f"Bad MIRCOVER value: {header['MIRCOVER']} "
-                f"(img class={header[OBSCLASS_KEY]})"
-            )
+            logger.error(f"Bad MIRCOVER value: {header['MIRCOVER']} "
+                         f"(img class={header[OBSCLASS_KEY]})")
             header[OBSCLASS_KEY] = "corrupted"
 
     else:
@@ -143,13 +143,13 @@ def clean_header(header: fits.Header) -> fits.Header:
     # Currently they may not come
     # with the correct TARGET_KEY.
     if header[OBSCLASS_KEY].lower() in [
-        "dark",
-        "bias",
-        "focus",
-        "pointing",
-        "flat",
-        "test",
-        "corrupted",
+            "dark",
+            "bias",
+            "focus",
+            "pointing",
+            "flat",
+            "test",
+            "corrupted",
     ]:
         target = header[OBSCLASS_KEY].lower()
 
@@ -207,8 +207,7 @@ def clean_header(header: fits.Header) -> fits.Header:
     if len(header["PROGNAME"]) != 8:
         logger.warning(
             f"PROGNAME {header['PROGNAME']} is not 8 characters long. "
-            f"Replacing with default."
-        )
+            f"Replacing with default.")
         header["PROGNAME"] = default_program.progname
 
     with warnings.catch_warnings():
@@ -262,9 +261,7 @@ def clean_header(header: fits.Header) -> fits.Header:
     return header
 
 
-def load_winter_stack(
-    path: str | Path,
-) -> Image:
+def load_winter_stack(path: str | Path, ) -> Image:
     """Load proc image
 
     :param path: Path to image
@@ -317,8 +314,7 @@ def load_astrometried_winter_image(path: str | Path) -> Image:
 
 
 def load_stacked_winter_image(
-    path: str | Path,
-) -> tuple[np.array, fits.Header]:
+    path: str | Path, ) -> tuple[np.array, fits.Header]:
     """Load proc image
 
     :param path: Path to image
@@ -345,9 +341,7 @@ def load_stacked_winter_image(
     return data, header
 
 
-def load_test_winter_image(
-    path: str | Path,
-) -> Image:
+def load_test_winter_image(path: str | Path, ) -> Image:
     """Load test WINTER image
 
     :param path: Path to image
@@ -364,7 +358,8 @@ def load_test_winter_image(
 
 def load_raw_winter_mef(
     path: str,
-) -> tuple[astropy.io.fits.Header, list[np.array], list[astropy.io.fits.Header]]:
+) -> tuple[astropy.io.fits.Header, list[np.array],
+           list[astropy.io.fits.Header]]:
     """Load mef image.
 
     :param path: Path to image
@@ -383,10 +378,8 @@ def load_raw_winter_mef(
     try:
         primary_header = clean_header(primary_header)
     except KeyError as exc:
-        logger.error(
-            f"Could not clean header for {path}: '{exc.args[0]}'. "
-            f"Marking as corrupted."
-        )
+        logger.error(f"Could not clean header for {path}: '{exc.args[0]}'. "
+                     f"Marking as corrupted.")
         corrupted = True
         try:
             primary_header["OBSTYPE"] = "CORRUPTED"
@@ -401,10 +394,8 @@ def load_raw_winter_mef(
             primary_header["EXPTIME"] = 0.0
 
             [date, time, milliseconds] = img_name.split("_")[1].split("-")
-            dateiso = (
-                f"{date[:4]}-{date[4:6]}-{date[6:]} "
-                f"{time[:2]}:{time[2:4]}:{time[4:6]}.{milliseconds}"
-            )
+            dateiso = (f"{date[:4]}-{date[4:6]}-{date[6:]} "
+                       f"{time[:2]}:{time[2:4]}:{time[4:6]}.{milliseconds}")
 
             primary_header["UTCISO"] = dateiso
             primary_header["TARGNAME"] = "CORRUPTED"
@@ -427,7 +418,8 @@ def load_raw_winter_mef(
         )
 
     except ExtensionParsingError:
-        logger.error(f"Could not parse extensions for {path}. Marking as corrupted.")
+        logger.error(
+            f"Could not parse extensions for {path}. Marking as corrupted.")
         corrupted = True
 
         split_headers = tag_mef_extension_file_headers(
@@ -457,9 +449,7 @@ def load_raw_winter_mef(
     return primary_header, split_data, split_headers
 
 
-def load_winter_mef_image(
-    path: str | Path,
-) -> list[Image]:
+def load_winter_mef_image(path: str | Path, ) -> list[Image]:
     """Function to load winter mef images
 
     :param path: Path to image
@@ -467,7 +457,9 @@ def load_winter_mef_image(
     :returns: list of images
 
     """
-    images = open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
+    images = open_mef_image(path,
+                            load_raw_winter_mef,
+                            extension_key="BOARD_ID")
     return images
 
 
@@ -496,19 +488,18 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
             image["SUBNYTOT"],
         )
 
-        mask = (
-            (subdets["nx"] == subnx)
-            & (subdets["ny"] == subny)
-            & (subdets["nxtot"] == subnxtot)
-            & (subdets["nytot"] == subnytot)
-            & (subdets["boardid"] == image["BOARD_ID"])
-        )
+        mask = ((subdets["nx"] == subnx)
+                & (subdets["ny"] == subny)
+                & (subdets["nxtot"] == subnxtot)
+                & (subdets["nytot"] == subnytot)
+                & (subdets["boardid"] == image["BOARD_ID"]))
         assert np.sum(mask) == 1, (
             f"Subdet not found for nx={subnx}, ny={subny}, "
             f"nxtot={subnxtot}, nytot={subnytot} and boardid={image['BOARD_ID']}"
         )
         image["SUBDETID"] = int(subdets[mask]["subdetid"].iloc[0])
-        image["RAWID"] = int(f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
+        image["RAWID"] = int(
+            f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
         image["USTACKID"] = None
 
         if "DATASEC" in image.keys():

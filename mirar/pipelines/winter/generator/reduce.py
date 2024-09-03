@@ -47,8 +47,7 @@ def winter_stackid_annotator(batch: ImageBatch) -> ImageBatch:
 
 
 winter_history_deprecated_constraint = DBQueryConstraints(
-    columns="deprecated", accepted_values="False", comparison_types="="
-)
+    columns="deprecated", accepted_values="False", comparison_types="=")
 
 
 def winter_fourier_filtered_image_generator(batch: ImageBatch) -> ImageBatch:
@@ -104,11 +103,10 @@ def select_winter_sky_flat_images(images: ImageBatch) -> ImageBatch:
         logger.warning(
             "No good flat images found, using all images in batch. "
             f"The filter and subdetid of the first image in batch is "
-            f"{images[0]['FILTER']} and {images[0][SUB_ID_KEY]}"
-        )
-        flat_images = select_from_images(
-            images, key=OBSCLASS_KEY, target_values="science"
-        )
+            f"{images[0]['FILTER']} and {images[0][SUB_ID_KEY]}")
+        flat_images = select_from_images(images,
+                                         key=OBSCLASS_KEY,
+                                         target_values="science")
     return flat_images
 
 
@@ -118,7 +116,9 @@ def select_winter_flat_images(images: ImageBatch) -> ImageBatch:
     :param images: ImageBatch:
 
     """
-    flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
+    flat_images = select_from_images(images,
+                                     key=OBSCLASS_KEY,
+                                     target_values="flat")
     return flat_images
 
 
@@ -128,10 +128,11 @@ def select_winter_dome_flats_images(images: ImageBatch) -> ImageBatch:
     :param images: ImageBatch:
 
     """
-    flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
+    flat_images = select_from_images(images,
+                                     key=OBSCLASS_KEY,
+                                     target_values="flat")
     flat_images = ImageBatch(
-        [image for image in flat_images if image["MEDCOUNT"] > 20000.0]
-    )
+        [image for image in flat_images if image["MEDCOUNT"] > 20000.0])
     return flat_images
 
 
@@ -152,7 +153,8 @@ def winter_master_flat_path_generator(images: ImageBatch) -> Path:
     assert len(subdetid) == 1, "More than one subdetid in batch"
     subdetid = subdetid[0]
 
-    master_flat_dir = get_output_dir(dir_root="winter/master_calibrations/masterflats")
+    master_flat_dir = get_output_dir(
+        dir_root="winter/master_calibrations/masterflats")
 
     master_flat_path = master_flat_dir / f"master_flat_{image_filter}_{subdetid}.fits"
     return master_flat_path
@@ -178,25 +180,21 @@ def winter_imsub_catalog_purifier(sci_catalog: Table, ref_catalog: Table):
     :param ref_catalog: Table:
 
     """
-    good_sci_sources = (
-        (sci_catalog["FLAGS"] == 0)
-        & (sci_catalog["FLAGS_MODEL"] == 0)
-        & (sci_catalog["SNR_WIN"] > 10)
-        & (sci_catalog["FWHM_WORLD"] < 4.0 / 3600)
-        & (sci_catalog["FWHM_WORLD"] > 0.5 / 3600)
-        & (sci_catalog["SNR_WIN"] < 200)
-        & (sci_catalog["FLUX_MAX"] < 30000)
-    )
+    good_sci_sources = ((sci_catalog["FLAGS"] == 0)
+                        & (sci_catalog["FLAGS_MODEL"] == 0)
+                        & (sci_catalog["SNR_WIN"] > 10)
+                        & (sci_catalog["FWHM_WORLD"] < 4.0 / 3600)
+                        & (sci_catalog["FWHM_WORLD"] > 0.5 / 3600)
+                        & (sci_catalog["SNR_WIN"] < 200)
+                        & (sci_catalog["FLUX_MAX"] < 30000))
 
-    good_ref_sources = (
-        (ref_catalog["FLAGS"] == 0)
-        & (ref_catalog["FLAGS_MODEL"] == 0)
-        & (ref_catalog["SNR_WIN"] > 10)
-        & (ref_catalog["FWHM_WORLD"] < 5.0 / 3600)
-        & (ref_catalog["FWHM_WORLD"] > 0.5 / 3600)
-        & (ref_catalog["SNR_WIN"] < 1000)
-        & (ref_catalog["FLUX_MAX"] < 30000)
-    )
+    good_ref_sources = ((ref_catalog["FLAGS"] == 0)
+                        & (ref_catalog["FLAGS_MODEL"] == 0)
+                        & (ref_catalog["SNR_WIN"] > 10)
+                        & (ref_catalog["FWHM_WORLD"] < 5.0 / 3600)
+                        & (ref_catalog["FWHM_WORLD"] > 0.5 / 3600)
+                        & (ref_catalog["SNR_WIN"] < 1000)
+                        & (ref_catalog["FLUX_MAX"] < 30000))
 
     return good_sci_sources, good_ref_sources
 
@@ -215,20 +213,20 @@ def mask_stamps_around_bright_stars(image: Image):
     bright_stars = catalog[(catalog["magnitude"] < 11)]
     logger.debug(f"Found {len(bright_stars)} bright stars in the image")
     stamp_half_size = 20
-    bright_star_crds = SkyCoord(
-        ra=bright_stars["ra"], dec=bright_stars["dec"], unit="deg"
-    )
+    bright_star_crds = SkyCoord(ra=bright_stars["ra"],
+                                dec=bright_stars["dec"],
+                                unit="deg")
     wcs = WCS(image.get_header())
     bright_star_pix_x, bright_star_pix_y = wcs.all_world2pix(
-        bright_star_crds.ra, bright_star_crds.dec, 1
-    )
-    logger.debug(f"Masking stamps around {len(bright_star_pix_x)} bright stars")
+        bright_star_crds.ra, bright_star_crds.dec, 1)
+    logger.debug(
+        f"Masking stamps around {len(bright_star_pix_x)} bright stars")
     mask = np.zeros_like(image.get_data(), dtype=bool)
 
     for x, y in zip(bright_star_pix_x, bright_star_pix_y):
         mask[
-            int(y) - stamp_half_size : int(y) + stamp_half_size,
-            int(x) - stamp_half_size : int(x) + stamp_half_size,
+            int(y) - stamp_half_size:int(y) + stamp_half_size,
+            int(x) - stamp_half_size:int(x) + stamp_half_size,
         ] = True
 
     return mask

@@ -46,8 +46,9 @@ def get_convolution(data: np.ndarray, kernel_width: int) -> np.ndarray:
 
     tophat_kernel = Tophat2DKernel(kernel_width)
     smooth_illumination = convolve_fft(
-        extended, tophat_kernel, nan_treatment="interpolate"
-    )[kernel_width:-kernel_width, kernel_width:-kernel_width]
+        extended, tophat_kernel,
+        nan_treatment="interpolate")[kernel_width:-kernel_width,
+                                     kernel_width:-kernel_width]
     return smooth_illumination
 
 
@@ -55,9 +56,7 @@ class MissingFlatError(ImageNotFoundError):
     """Error for when a dark image is missing"""
 
 
-def default_select_flat(
-    images: ImageBatch,
-) -> ImageBatch:
+def default_select_flat(images: ImageBatch, ) -> ImageBatch:
     """Select images tagged as flat
 
     :param images: set of images
@@ -81,7 +80,8 @@ class FlatCalibrator(ProcessorWithCache):
         y_min: int = 0,
         y_max: int = sys.maxsize,
         flat_nan_threshold: float = 0.0,
-        select_flat_images: Callable[[ImageBatch], ImageBatch] = default_select_flat,
+        select_flat_images: Callable[[ImageBatch],
+                                     ImageBatch] = default_select_flat,
         flat_mask_key: str = None,
         flat_mode: str = "median",
         **kwargs,
@@ -156,15 +156,14 @@ class FlatCalibrator(ProcessorWithCache):
 
             if self.flat_mask_key is not None:
                 if self.flat_mask_key not in img.header.keys():
-                    err = (
-                        f"Image {img} does not have a mask with key "
-                        f"{self.flat_mask_key}"
-                    )
+                    err = (f"Image {img} does not have a mask with key "
+                           f"{self.flat_mask_key}")
                     logger.error(err)
                     raise KeyError(err)
 
                 mask_file = img[self.flat_mask_key]
-                logger.debug(f"Masking flat {img[BASE_NAME_KEY]} with mask {mask_file}")
+                logger.debug(
+                    f"Masking flat {img[BASE_NAME_KEY]} with mask {mask_file}")
                 if not os.path.exists(mask_file):
                     err = f"Mask file {mask_file} does not exist"
                     logger.error(err)
@@ -180,9 +179,8 @@ class FlatCalibrator(ProcessorWithCache):
 
             flat_exptimes.append(img[EXPTIME_KEY])
 
-            median = np.nanmedian(
-                data[self.x_min : self.x_max, self.y_min : self.y_max]
-            )
+            median = np.nanmedian(data[self.x_min:self.x_max,
+                                       self.y_min:self.y_max])
             flats[:, :, i] = data / median
 
         logger.debug(f"Median combining {n_frames} flats")
@@ -198,14 +196,13 @@ class FlatCalibrator(ProcessorWithCache):
 
                 # Clip outliers (they'll get worked out in stacking)
                 std = np.nanstd(pixel_variation)
-                sig = abs(pixel_variation - np.nanmedian(pixel_variation)) / std
+                sig = abs(pixel_variation -
+                          np.nanmedian(pixel_variation)) / std
 
                 mask = sig > 1.0
 
-                logger.debug(
-                    f"Masking {np.sum(mask)} pixels "
-                    f"out of {len(mask.flatten())}in flat"
-                )
+                logger.debug(f"Masking {np.sum(mask)} pixels "
+                             f"out of {len(mask.flatten())}in flat")
                 pixel_variation[mask] = np.nan
                 master_flat = pixel_variation / np.nanmedian(pixel_variation)
 
@@ -217,31 +214,27 @@ class FlatCalibrator(ProcessorWithCache):
 
                 # Clip outliers (they'll get worked out in stacking)
                 std = np.nanstd(pixel_variation)
-                sig = abs(pixel_variation - np.nanmedian(pixel_variation)) / std
+                sig = abs(pixel_variation -
+                          np.nanmedian(pixel_variation)) / std
 
                 mask = sig > 1.0
 
-                logger.debug(
-                    f"Masking {np.sum(mask)} pixels "
-                    f"out of {len(mask.flatten())}in flat"
-                )
+                logger.debug(f"Masking {np.sum(mask)} pixels "
+                             f"out of {len(mask.flatten())}in flat")
 
                 pixel_variation[mask] = np.nan
-                master_flat = (
-                    pixel_variation
-                    * flatdata_norm_smooth
-                    / np.nanmedian(pixel_variation)
-                )
+                master_flat = (pixel_variation * flatdata_norm_smooth /
+                               np.nanmedian(pixel_variation))
 
             else:
                 raise ValueError(f"Flat mode {self.flat_mode} not supported")
 
-        master_flat_image = Image(master_flat, header=copy(images[0].get_header()))
+        master_flat_image = Image(master_flat,
+                                  header=copy(images[0].get_header()))
         master_flat_image[COADD_KEY] = n_frames
 
         master_flat_image["INDIVEXP"] = ",".join(
-            [str(x) for x in np.unique(flat_exptimes)]
-        )
+            [str(x) for x in np.unique(flat_exptimes)])
         return master_flat_image
 
 
@@ -257,9 +250,7 @@ class SkyFlatCalibrator(FlatCalibrator):
         )
 
     @staticmethod
-    def select_sky_flat(
-        images: ImageBatch,
-    ) -> ImageBatch:
+    def select_sky_flat(images: ImageBatch, ) -> ImageBatch:
         """Select science images to use as sky flats
 
         :param images: set of images
@@ -267,7 +258,9 @@ class SkyFlatCalibrator(FlatCalibrator):
         :returns: subset of 'sky' images
 
         """
-        return select_from_images(images, key=OBSCLASS_KEY, target_values="science")
+        return select_from_images(images,
+                                  key=OBSCLASS_KEY,
+                                  target_values="science")
 
     def description(self) -> str:
         """ """

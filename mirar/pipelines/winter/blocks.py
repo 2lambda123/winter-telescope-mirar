@@ -96,8 +96,7 @@ from mirar.pipelines.winter.validator import winter_dark_oversubtraction_rejecto
 from mirar.processors.astromatic import PSFex
 from mirar.processors.astromatic import Scamp
 from mirar.processors.astromatic.sextractor.background_subtractor import (
-    SextractorBkgSubtractor,
-)
+    SextractorBkgSubtractor, )
 from mirar.processors.astromatic.sextractor.sextractor import Sextractor
 from mirar.processors.astromatic.swarp.swarp import Swarp
 from mirar.processors.astrometry.anet.anet_processor import AstrometryNet
@@ -158,26 +157,24 @@ build_test = [
         load_image=load_winter_mef_image,
     ),
     ImageBatcher("UTCTIME"),
-    CSVLog(
-        export_keys=[
-            "UTCTIME",
-            "PROGNAME",
-            "TARGNAME",
-            DITHER_N_KEY,
-            MAX_DITHER_KEY,
-            "FILTER",
-            EXPTIME_KEY,
-            OBSCLASS_KEY,
-            "BOARD_ID",
-            "BASENAME",
-            TARGET_KEY,
-            "RADEG",
-            "DECDEG",
-            "T_ROIC",
-            "FIELDID",
-            "FOCPOS",
-        ]
-    ),
+    CSVLog(export_keys=[
+        "UTCTIME",
+        "PROGNAME",
+        "TARGNAME",
+        DITHER_N_KEY,
+        MAX_DITHER_KEY,
+        "FILTER",
+        EXPTIME_KEY,
+        OBSCLASS_KEY,
+        "BOARD_ID",
+        "BASENAME",
+        TARGET_KEY,
+        "RADEG",
+        "DECDEG",
+        "T_ROIC",
+        "FIELDID",
+        "FOCPOS",
+    ]),
     ImageSelector(
         ("BOARD_ID", "2"),
         (OBSCLASS_KEY, ["dark", "science"]),
@@ -219,42 +216,41 @@ load_raw = [
         input_sub_dir="raw",
         load_image=load_winter_mef_image,
     ),
-    CalHunter(
-        load_image=load_winter_mef_image, requirements=winter_cal_requirements
-    ),  # FIXME: add back in
+    CalHunter(load_image=load_winter_mef_image,
+              requirements=winter_cal_requirements),  # FIXME: add back in
 ]
 
 load_astrometry = [
-    ImageLoader(input_sub_dir="post_scamp", load_image=load_astrometried_winter_image)
+    ImageLoader(input_sub_dir="post_scamp",
+                load_image=load_astrometried_winter_image)
 ]
 
 extract_all = [
     ImageRebatcher("EXPID"),
-    DatabaseImageBatchInserter(db_table=Exposure, duplicate_protocol="replace"),
+    DatabaseImageBatchInserter(db_table=Exposure,
+                               duplicate_protocol="replace"),
 ]
 
 csvlog = [
-    CSVLog(
-        export_keys=[
-            "UTCTIME",
-            "PROGNAME",
-            DITHER_N_KEY,
-            MAX_DITHER_KEY,
-            "FILTER",
-            EXPTIME_KEY,
-            OBSCLASS_KEY,
-            "BOARD_ID",
-            "MIRCOVER",
-            "BASENAME",
-            TARGET_KEY,
-            "RADEG",
-            "DECDEG",
-            "T_ROIC",
-            "FIELDID",
-            "READOUTM",
-            "READOUTV",
-        ]
-    ),
+    CSVLog(export_keys=[
+        "UTCTIME",
+        "PROGNAME",
+        DITHER_N_KEY,
+        MAX_DITHER_KEY,
+        "FILTER",
+        EXPTIME_KEY,
+        OBSCLASS_KEY,
+        "BOARD_ID",
+        "MIRCOVER",
+        "BASENAME",
+        TARGET_KEY,
+        "RADEG",
+        "DECDEG",
+        "T_ROIC",
+        "FIELDID",
+        "READOUTM",
+        "READOUTV",
+    ]),
     ImageRebatcher(BASE_NAME_KEY),
 ]
 
@@ -263,9 +259,7 @@ select_split_subset = [ImageSelector(("SUBCOORD", "0_0"))]
 # Optional subset selection
 BOARD_ID = 4
 select_subset = [
-    ImageSelector(
-        ("BOARD_ID", str(BOARD_ID)),
-    ),
+    ImageSelector(("BOARD_ID", str(BOARD_ID)), ),
 ]
 
 select_ref = [
@@ -314,31 +308,30 @@ save_raw = [
 load_unpacked = [
     ImageLoader(input_sub_dir="raw_unpacked", input_img_dir=base_output_dir),
     ImageRebatcher("UTCTIME"),
-    CSVLog(
-        export_keys=[
-            "UTCTIME",
-            "PROGNAME",
-            DITHER_N_KEY,
-            MAX_DITHER_KEY,
-            "FILTER",
-            EXPTIME_KEY,
-            OBSCLASS_KEY,
-            "BOARD_ID",
-            "BASENAME",
-            TARGET_KEY,
-            "RADEG",
-            "DECDEG",
-            "T_ROIC",
-            "FIELDID",
-            "MEDCOUNT",
-        ]
-    ),
+    CSVLog(export_keys=[
+        "UTCTIME",
+        "PROGNAME",
+        DITHER_N_KEY,
+        MAX_DITHER_KEY,
+        "FILTER",
+        EXPTIME_KEY,
+        OBSCLASS_KEY,
+        "BOARD_ID",
+        "BASENAME",
+        TARGET_KEY,
+        "RADEG",
+        "DECDEG",
+        "T_ROIC",
+        "FIELDID",
+        "MEDCOUNT",
+    ]),
     ImageRebatcher(BASE_NAME_KEY),
 ]
 
-export_unpacked = [DatabaseImageInserter(db_table=Raw, duplicate_protocol="replace")]
+export_unpacked = [
+    DatabaseImageInserter(db_table=Raw, duplicate_protocol="replace")
+]
 load_and_export_unpacked = load_unpacked + export_unpacked
-
 
 # Detrend blocks
 
@@ -348,9 +341,9 @@ non_linear_correction = [
 ]
 
 dark_calibrate = [
-    ImageRebatcher(
-        ["BOARD_ID", EXPTIME_KEY, "SUBCOORD", "GAINCOLT", "GAINCOLB", "GAINROW"]
-    ),
+    ImageRebatcher([
+        "BOARD_ID", EXPTIME_KEY, "SUBCOORD", "GAINCOLT", "GAINCOLB", "GAINROW"
+    ]),
     DarkCalibrator(
         cache_sub_dir="calibration_darks",
         cache_image_name_header_keys=[EXPTIME_KEY, "BOARD_ID"],
@@ -371,17 +364,15 @@ flat_calibrate = [
     ),
     ImageSelector((OBSCLASS_KEY, ["science"])),
     ImageSaver(output_dir_name="domeflatcal"),
-    ImageRebatcher(
-        [
-            "BOARD_ID",
-            "FILTER",
-            "SUBCOORD",
-            "GAINCOLT",
-            "GAINCOLB",
-            "GAINROW",
-            TARGET_KEY,
-        ]
-    ),
+    ImageRebatcher([
+        "BOARD_ID",
+        "FILTER",
+        "SUBCOORD",
+        "GAINCOLT",
+        "GAINCOLB",
+        "GAINROW",
+        TARGET_KEY,
+    ]),
     FlatCalibrator(
         cache_sub_dir="sky_dither_flats",
         select_flat_images=select_winter_sky_flat_images,
@@ -430,7 +421,8 @@ astrometry = [
         catalog_purifier=winter_astrometry_sextractor_catalog_purifier,
     ),
     CustomImageBatchModifier(winter_astrometric_ref_catalog_namer),
-    ImageRebatcher([TARGET_KEY, "FILTER", EXPTIME_KEY, "BOARD_ID", "SUBCOORD"]),
+    ImageRebatcher([TARGET_KEY, "FILTER", EXPTIME_KEY, "BOARD_ID",
+                    "SUBCOORD"]),
     Scamp(
         scamp_config_path=scamp_config_path,
         ref_catalog_generator=winter_astrometric_ref_catalog_generator,
@@ -454,7 +446,8 @@ validate_astrometry = [
         cache=False,
         crossmatch_radius_arcsec=5.0,
     ),
-    DatabaseImageInserter(db_table=AstrometryStat, duplicate_protocol="ignore"),
+    DatabaseImageInserter(db_table=AstrometryStat,
+                          duplicate_protocol="ignore"),
     CustomImageBatchModifier(poor_astrometric_quality_rejector),
 ]
 
@@ -508,15 +501,15 @@ photcal_and_export = [
         write_regions=True,
         cache=True,
         zp_calculator=ZPWithColorTermCalculator(
-            color_colnames_guess_generator=winter_photcal_color_columns_generator,
+            color_colnames_guess_generator=
+            winter_photcal_color_columns_generator,
             reject_outliers=True,
             solver="curve_fit",
         ),
         zp_column_name="MAG_AUTO",
     ),
-    CatalogLimitingMagnitudeCalculator(
-        sextractor_mag_key_name="MAG_AUTO", write_regions=True
-    ),
+    CatalogLimitingMagnitudeCalculator(sextractor_mag_key_name="MAG_AUTO",
+                                       write_regions=True),
     AstrometryStatsWriter(
         ref_catalog_generator=winter_astrometric_ref_catalog_generator,
         image_catalog_purifier=winter_astrostat_catalog_purifier,
@@ -601,15 +594,15 @@ stack_stacks = [
         write_regions=True,
         cache=True,
         zp_calculator=ZPWithColorTermCalculator(
-            color_colnames_guess_generator=winter_photcal_color_columns_generator,
+            color_colnames_guess_generator=
+            winter_photcal_color_columns_generator,
             reject_outliers=True,
             solver="curve_fit",
         ),
         zp_column_name="MAG_AUTO",
     ),
-    CatalogLimitingMagnitudeCalculator(
-        sextractor_mag_key_name="MAG_AUTO", write_regions=True
-    ),
+    CatalogLimitingMagnitudeCalculator(sextractor_mag_key_name="MAG_AUTO",
+                                       write_regions=True),
     ImageSaver(output_dir_name="final_stack_of_stacks"),
 ]
 
@@ -683,9 +676,9 @@ imsub = [
         flux_key="FLUX_POINTSOURCE",
     ),
     # ImageSaver(output_dir_name="prezogy"),
-    ZOGY(
-        output_sub_dir="subtract", sci_zp_header_key="ZP_AUTO", ref_zp_header_key=ZP_KEY
-    ),
+    ZOGY(output_sub_dir="subtract",
+         sci_zp_header_key="ZP_AUTO",
+         ref_zp_header_key=ZP_KEY),
     ImageSaver(output_dir_name="diffs"),
     DatabaseImageInserter(db_table=Diff, duplicate_protocol="replace"),
     ImageSaver(output_dir_name="subtract"),
@@ -741,8 +734,7 @@ crossmatch_candidates = [
     XMatch(catalog=GaiaBright(num_sources=1, search_radius_arcmin=1.5)),
     XMatch(catalog=ZTF(num_sources=1, search_radius_arcmin=2.0 / 60.0)),
     CustomSourceTableModifier(
-        modifier_function=winter_candidate_avro_fields_calculator
-    ),
+        modifier_function=winter_candidate_avro_fields_calculator),
     SourceWriter(output_dir_name="kowalski"),
 ]
 
@@ -814,11 +806,13 @@ avro_write = [
 ]
 
 # configure to broadcast to IPAC
-BROADCAST_BOOL = str(os.getenv("BROADCAST_AVRO", None)) in ["True", "t", "1", "true"]
+BROADCAST_BOOL = str(os.getenv("BROADCAST_AVRO",
+                               None)) in ["True", "t", "1", "true"]
 
 avro_broadcast = [
     # Filter out low quality candidates
-    CustomSourceTableModifier(modifier_function=winter_candidate_quality_filterer),
+    CustomSourceTableModifier(
+        modifier_function=winter_candidate_quality_filterer),
     # Save candidates before sending to IPAC
     SourceWriter(output_dir_name="preskyportal"),
     # Only send a subset of the candidates to IPAC
@@ -841,7 +835,10 @@ avro_export = avro_write + avro_broadcast
 
 process_candidates = ml_classify + crossmatch_candidates + name_candidates + avro_write
 
-load_avro = [SourceLoader(input_dir_name="preavro"), SourceBatcher(BASE_NAME_KEY)]
+load_avro = [
+    SourceLoader(input_dir_name="preavro"),
+    SourceBatcher(BASE_NAME_KEY)
+]
 
 load_skyportal = [
     SourceLoader(input_dir_name="preskyportal"),
@@ -883,20 +880,13 @@ focus_subcoord = [
 # Combinations of different blocks, to be used in configurations
 process_and_stack = astrometry + validate_astrometry + stack_dithers
 
-unpack_subset = (
-    load_raw + extract_all + csvlog + select_subset + mask_and_split + save_raw
-)
+unpack_subset = (load_raw + extract_all + csvlog + select_subset +
+                 mask_and_split + save_raw)
 
 unpack_all = load_raw + extract_all + csvlog + mask_and_split + save_raw
 
-full_reduction = (
-    non_linear_correction
-    + dark_calibrate
-    + flat_calibrate
-    + fourier_filter
-    + process_and_stack
-    + photcal_and_export
-)
+full_reduction = (non_linear_correction + dark_calibrate + flat_calibrate +
+                  fourier_filter + process_and_stack + photcal_and_export)
 
 photcal_stacks = [
     ImageLoader(
@@ -908,20 +898,13 @@ photcal_stacks = [
 
 reduce_unpacked = load_and_export_unpacked + full_reduction
 
-reduce_unpacked_subset = (
-    load_unpacked + select_subset + export_unpacked + full_reduction
-)
+reduce_unpacked_subset = (load_unpacked + select_subset + export_unpacked +
+                          full_reduction)
 
 reduce = unpack_all + full_reduction
 
-reftest = (
-    unpack_subset
-    + dark_calibrate
-    + flat_calibrate
-    + process_and_stack
-    + select_ref
-    + refbuild
-)
+reftest = (unpack_subset + dark_calibrate + flat_calibrate +
+           process_and_stack + select_ref + refbuild)
 
 detrend_unpacked = load_and_export_unpacked + dark_calibrate + flat_calibrate
 
@@ -933,15 +916,8 @@ candidates = detect_candidates + process_candidates
 
 full = realtime + imsub
 
-focus_cals = (
-    load_raw
-    + extract_all
-    + mask
-    + focus_subcoord
-    + csvlog
-    + dark_calibrate
-    + flat_calibrate
-)
+focus_cals = (load_raw + extract_all + mask + focus_subcoord + csvlog +
+              dark_calibrate + flat_calibrate)
 
 stack_forced_photometry = [
     ImageRebatcher([BASE_NAME_KEY]),
