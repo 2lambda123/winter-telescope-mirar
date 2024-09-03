@@ -7,13 +7,13 @@ from pathlib import Path
 from typing import Callable
 
 import pandas as pd
-import requests
 import torch
 from torch import nn
 
 from mirar.data import SourceBatch
 from mirar.paths import ml_models_dir
 from mirar.processors.base_processor import BaseSourceProcessor
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class Pytorch(BaseSourceProcessor):
             f"Downloading model {self.model_name} " f"from {url} to {local_path}"
         )
 
-        with requests.get(url, stream=True, timeout=120.0) as r:
+        with safe_requests.get(url, stream=True, timeout=120.0) as r:
             r.raise_for_status()
             with open(local_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):

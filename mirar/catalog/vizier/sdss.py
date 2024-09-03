@@ -6,12 +6,12 @@ import logging
 from pathlib import Path
 
 import numpy as np
-import requests
 from pydl.pydlutils import mangle
 
 from mirar.catalog.vizier.base_vizier_catalog import VizierCatalog
 from mirar.errors import ProcessorError
 from mirar.paths import base_output_dir
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def get_sdss_coverage() -> mangle.PolygonList:
         )
         print(SDSS_COVERAGE_PATH)
         with open(str(SDSS_COVERAGE_PATH), "wb+") as sdss_file:
-            res = requests.get(SDSS_COVERAGE_URL, allow_redirects=True, timeout=TIMEOUT)
+            res = safe_requests.get(SDSS_COVERAGE_URL, allow_redirects=True, timeout=TIMEOUT)
             sdss_file.write(res.content)
 
     sdss_coverage = mangle.read_mangle_polygons(str(SDSS_COVERAGE_PATH))
