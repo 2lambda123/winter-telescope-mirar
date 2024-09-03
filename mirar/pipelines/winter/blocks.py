@@ -43,6 +43,8 @@ from mirar.pipelines.winter.constants import NXSPLIT, NYSPLIT
 from mirar.pipelines.winter.generator import (
     apply_rb_to_table,
     mask_stamps_around_bright_stars,
+    select_winter_dome_flats_images,
+    select_winter_flat_images,
     select_winter_sky_flat_images,
     winter_anet_sextractor_config_path_generator,
     winter_astrometric_ref_catalog_generator,
@@ -91,6 +93,7 @@ from mirar.pipelines.winter.models import (
     Source,
     Stack,
 )
+from mirar.pipelines.winter.nlc import apply_winter_nlc
 from mirar.pipelines.winter.validator import (
     masked_images_rejector,
     poor_astrometric_quality_rejector,
@@ -149,6 +152,8 @@ from mirar.processors.utils import (
     ImageSaver,
     ImageSelector,
     MEFLoader,
+    ModeMasker,
+    NanFiller,
 )
 from mirar.processors.utils.cal_hunter import CalHunter
 from mirar.processors.xmatch import XMatch
@@ -222,7 +227,9 @@ load_raw = [
         input_sub_dir="raw",
         load_image=load_winter_mef_image,
     ),
-    CalHunter(load_image=load_winter_mef_image, requirements=winter_cal_requirements),
+    CalHunter(
+        load_image=load_winter_mef_image, requirements=winter_cal_requirements
+    ),  # FIXME: add back in
 ]
 
 load_astrometry = [
@@ -314,7 +321,7 @@ save_raw = [
 
 load_unpacked = [
     ImageLoader(input_sub_dir="raw_unpacked", input_img_dir=base_output_dir),
-    ImageRebatcher("EXPID"),
+    ImageRebatcher("UTCTIME"),
     CSVLog(
         export_keys=[
             "UTCTIME",
@@ -343,6 +350,11 @@ load_and_export_unpacked = load_unpacked + export_unpacked
 
 # Detrend blocks
 
+non_linear_correction = [
+    ImageRebatcher(BASE_NAME_KEY),
+    CustomImageBatchModifier(apply_winter_nlc),
+]
+
 dark_calibrate = [
     ImageRebatcher(
         ["BOARD_ID", EXPTIME_KEY, "SUBCOORD", "GAINCOLT", "GAINCOLB", "GAINROW"]
@@ -358,7 +370,15 @@ dark_calibrate = [
 ]
 
 flat_calibrate = [
+    ImageRebatcher(["SUBCOORD", "FILTER"]),
+    FlatCalibrator(
+        cache_sub_dir="calibration_flats",
+        select_flat_images=select_winter_dome_flats_images,
+        cache_image_name_header_keys=["FILTER", "BOARD_ID"],
+        flat_mode="pixel",
+    ),
     ImageSelector((OBSCLASS_KEY, ["science"])),
+    ImageSaver(output_dir_name="domeflatcal"),
     ImageRebatcher(
         [
             "BOARD_ID",
@@ -373,9 +393,11 @@ flat_calibrate = [
     FlatCalibrator(
         cache_sub_dir="sky_dither_flats",
         select_flat_images=select_winter_sky_flat_images,
+        flat_mode="structure",
+        # flat_mode="median",
     ),
-    ImageRebatcher(BASE_NAME_KEY),
-    ImageSaver(output_dir_name="skyflatcal"),
+    ImageSaver(output_dir_name="allskyflatcal"),
+    ImageRebatcher([BASE_NAME_KEY]),
     Sextractor(
         **sextractor_astrometry_config,
         write_regions_bool=True,
@@ -447,6 +469,9 @@ validate_astrometry = [
 stack_dithers = [
     CustomImageBatchModifier(winter_boardid_6_demasker),
     ImageRebatcher("STACKID"),
+    NanFiller(),
+    MaskPixelsFromFunction(mask_function=get_raw_winter_mask),
+    ImageSaver(output_dir_name="prestack"),
     Swarp(
         swarp_config_path=swarp_config_path,
         calculate_dims_in_swarp=True,
@@ -458,7 +483,14 @@ stack_dithers = [
         header_keys_to_combine=["RAWID"],
     ),
     ImageRebatcher(BASE_NAME_KEY),
+    ModeMasker(),
     ImageSaver(output_dir_name="stack"),
+]
+
+remask = [
+    ImageLoader(input_sub_dir="stack", input_img_dir=base_output_dir),
+    ModeMasker(),  # Mask out the pixels which are stacked nans
+    ImageSaver(output_dir_name="stack_masks"),
 ]
 
 photcal_and_export = [
@@ -866,7 +898,8 @@ unpack_subset = (
 unpack_all = load_raw + extract_all + csvlog + mask_and_split + save_raw
 
 full_reduction = (
-    dark_calibrate
+    non_linear_correction
+    + dark_calibrate
     + flat_calibrate
     + fourier_filter
     + process_and_stack
