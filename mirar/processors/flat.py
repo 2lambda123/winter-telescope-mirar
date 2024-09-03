@@ -82,7 +82,8 @@ class FlatCalibrator(ProcessorWithCache):
         y_min: int = 0,
         y_max: int = sys.maxsize,
         flat_nan_threshold: float = 0.0,
-        select_flat_images: Callable[[ImageBatch], ImageBatch] = default_select_flat,
+        select_flat_images: Callable[[ImageBatch],
+                                     ImageBatch] = default_select_flat,
         flat_mask_key: str = None,
         flat_mode: str = "median",
         **kwargs,
@@ -154,7 +155,8 @@ class FlatCalibrator(ProcessorWithCache):
                     raise KeyError(err)
 
                 mask_file = img[self.flat_mask_key]
-                logger.debug(f"Masking flat {img[BASE_NAME_KEY]} with mask {mask_file}")
+                logger.debug(
+                    f"Masking flat {img[BASE_NAME_KEY]} with mask {mask_file}")
                 if not os.path.exists(mask_file):
                     err = f"Mask file {mask_file} does not exist"
                     logger.error(err)
@@ -171,7 +173,7 @@ class FlatCalibrator(ProcessorWithCache):
             flat_exptimes.append(img[EXPTIME_KEY])
 
             median = np.nanmedian(
-                data[self.x_min : self.x_max, self.y_min : self.y_max]
+                data[self.x_min: self.x_max, self.y_min: self.y_max]
             )
             flats[:, :, i] = data / median
 
@@ -188,13 +190,14 @@ class FlatCalibrator(ProcessorWithCache):
 
                 # Clip outliers (they'll get worked out in stacking)
                 std = np.nanstd(pixel_variation)
-                sig = abs(pixel_variation - np.nanmedian(pixel_variation)) / std
+                sig = abs(pixel_variation -
+                          np.nanmedian(pixel_variation)) / std
 
                 mask = sig > 1.0
 
                 logger.debug(
                     f"Masking {np.sum(mask)} pixels "
-                    f"out of {len(mask.flatten()) }in flat"
+                    f"out of {len(mask.flatten())}in flat"
                 )
                 pixel_variation[mask] = np.nan
                 master_flat = pixel_variation / np.nanmedian(pixel_variation)
@@ -207,13 +210,14 @@ class FlatCalibrator(ProcessorWithCache):
 
                 # Clip outliers (they'll get worked out in stacking)
                 std = np.nanstd(pixel_variation)
-                sig = abs(pixel_variation - np.nanmedian(pixel_variation)) / std
+                sig = abs(pixel_variation -
+                          np.nanmedian(pixel_variation)) / std
 
                 mask = sig > 1.0
 
                 logger.debug(
                     f"Masking {np.sum(mask)} pixels "
-                    f"out of {len(mask.flatten()) }in flat"
+                    f"out of {len(mask.flatten())}in flat"
                 )
 
                 pixel_variation[mask] = np.nan
@@ -226,7 +230,8 @@ class FlatCalibrator(ProcessorWithCache):
             else:
                 raise ValueError(f"Flat mode {self.flat_mode} not supported")
 
-        master_flat_image = Image(master_flat, header=copy(images[0].get_header()))
+        master_flat_image = Image(
+            master_flat, header=copy(images[0].get_header()))
         master_flat_image[COADD_KEY] = n_frames
 
         master_flat_image["INDIVEXP"] = ",".join(

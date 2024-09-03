@@ -167,7 +167,8 @@ def clean_header(header: fits.Header) -> fits.Header:
     header["RA"] = header["RADEG"]
     header["DEC"] = header["DECDEG"]
 
-    header["EXPID"] = int((date_t.mjd - 59000.0) * 86400.0)  # seconds since 60000 MJD
+    # seconds since 60000 MJD
+    header["EXPID"] = int((date_t.mjd - 59000.0) * 86400.0)
 
     if COADD_KEY not in header.keys():
         logger.debug(f"No {COADD_KEY} entry. Setting coadds to 1.")
@@ -424,7 +425,8 @@ def load_raw_winter_mef(
         )
 
     except ExtensionParsingError:
-        logger.error(f"Could not parse extensions for {path}. Marking as corrupted.")
+        logger.error(
+            f"Could not parse extensions for {path}. Marking as corrupted.")
         corrupted = True
 
         split_headers = tag_mef_extension_file_headers(
@@ -463,7 +465,8 @@ def load_winter_mef_image(
     :param path: Path to image
     :return: list of images
     """
-    images = open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
+    images = open_mef_image(path, load_raw_winter_mef,
+                            extension_key="BOARD_ID")
     return images
 
 
@@ -503,7 +506,8 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
             f"nxtot={subnxtot}, nytot={subnytot} and boardid={image['BOARD_ID']}"
         )
         image["SUBDETID"] = int(subdets[mask]["subdetid"].iloc[0])
-        image["RAWID"] = int(f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
+        image["RAWID"] = int(
+            f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
         image["USTACKID"] = None
 
         if "DATASEC" in image.keys():
