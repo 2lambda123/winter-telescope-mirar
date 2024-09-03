@@ -93,8 +93,7 @@ winter_cal_requirements = [
     ),
 ]
 
-winter_avro_schema_path = winter_file_dir.joinpath(
-    "avro_schema/winter.alert.avsc")
+winter_avro_schema_path = winter_file_dir.joinpath("avro_schema/winter.alert.avsc")
 winter_avro_schema = load_schema(winter_avro_schema_path)
 winter_prv_schema = winter_avro_schema["__named_schemas"]["winter.alert.prv_candidate"]
 prv_candidate_cols = [x["name"] for x in winter_prv_schema["fields"]]

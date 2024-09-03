@@ -18,7 +18,7 @@ from mirar.paths import (
     OBSCLASS_KEY,
     REF_CAT_PATH_KEY,
     SATURATE_KEY,
-    get_output_dir
+    get_output_dir,
 )
 from mirar.pipelines.winter.config import sextractor_anet_config
 from mirar.pipelines.winter.fourier_bkg_model import subtract_fourier_background_model
@@ -113,8 +113,7 @@ def select_winter_flat_images(images: ImageBatch) -> ImageBatch:
     """
     Selects the flat for the winter data, get the top 250 images sorted by median counts
     """
-    flat_images = select_from_images(
-        images, key=OBSCLASS_KEY, target_values="flat")
+    flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
     return flat_images
 
 
@@ -122,8 +121,7 @@ def select_winter_dome_flats_images(images: ImageBatch) -> ImageBatch:
     """
     Selects the flat for the winter data, get the top 250 images sorted by median counts
     """
-    flat_images = select_from_images(
-        images, key=OBSCLASS_KEY, target_values="flat")
+    flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
     flat_images = ImageBatch(
         [image for image in flat_images if image["MEDCOUNT"] > 20000.0]
     )
@@ -146,11 +144,9 @@ def winter_master_flat_path_generator(images: ImageBatch) -> Path:
     assert len(subdetid) == 1, "More than one subdetid in batch"
     subdetid = subdetid[0]
 
-    master_flat_dir = get_output_dir(
-        dir_root="winter/master_calibrations/masterflats")
+    master_flat_dir = get_output_dir(dir_root="winter/master_calibrations/masterflats")
 
-    master_flat_path = master_flat_dir / \
-        f"master_flat_{image_filter}_{subdetid}.fits"
+    master_flat_path = master_flat_dir / f"master_flat_{image_filter}_{subdetid}.fits"
     return master_flat_path
 
 
@@ -213,14 +209,13 @@ def mask_stamps_around_bright_stars(image: Image):
     bright_star_pix_x, bright_star_pix_y = wcs.all_world2pix(
         bright_star_crds.ra, bright_star_crds.dec, 1
     )
-    logger.debug(
-        f"Masking stamps around {len(bright_star_pix_x)} bright stars")
+    logger.debug(f"Masking stamps around {len(bright_star_pix_x)} bright stars")
     mask = np.zeros_like(image.get_data(), dtype=bool)
 
     for x, y in zip(bright_star_pix_x, bright_star_pix_y):
         mask[
-            int(y) - stamp_half_size: int(y) + stamp_half_size,
-            int(x) - stamp_half_size: int(x) + stamp_half_size,
+            int(y) - stamp_half_size : int(y) + stamp_half_size,
+            int(x) - stamp_half_size : int(x) + stamp_half_size,
         ] = True
 
     return mask

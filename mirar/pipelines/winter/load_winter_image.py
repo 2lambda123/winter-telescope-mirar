@@ -425,8 +425,7 @@ def load_raw_winter_mef(
         )
 
     except ExtensionParsingError:
-        logger.error(
-            f"Could not parse extensions for {path}. Marking as corrupted.")
+        logger.error(f"Could not parse extensions for {path}. Marking as corrupted.")
         corrupted = True
 
         split_headers = tag_mef_extension_file_headers(
@@ -465,8 +464,7 @@ def load_winter_mef_image(
     :param path: Path to image
     :return: list of images
     """
-    images = open_mef_image(path, load_raw_winter_mef,
-                            extension_key="BOARD_ID")
+    images = open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
     return images
 
 
@@ -506,8 +504,7 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
             f"nxtot={subnxtot}, nytot={subnytot} and boardid={image['BOARD_ID']}"
         )
         image["SUBDETID"] = int(subdets[mask]["subdetid"].iloc[0])
-        image["RAWID"] = int(
-            f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
+        image["RAWID"] = int(f"{image['EXPID']}_{str(image['SUBDETID']).rjust(2, '0')}")
         image["USTACKID"] = None
 
         if "DATASEC" in image.keys():

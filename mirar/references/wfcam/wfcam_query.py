@@ -243,8 +243,7 @@ class WFAUQuery(BaseWFCAMQuery):
             ]
             for key in required_query_db_keys:
                 if key not in self.query_db_table.sql_model.__table__.columns:
-                    raise ValueError(
-                        f"{key} must be present in the query_db_table")
+                    raise ValueError(f"{key} must be present in the query_db_table")
 
     def get_query_class(self) -> BaseWFAUClass:
         """
@@ -308,12 +307,10 @@ class WFAUQuery(BaseWFCAMQuery):
             image.header, self.num_query_points
         )
 
-        query_crds = SkyCoord(
-            ra=query_ra_list, dec=query_dec_list, unit=(u.deg, u.deg))
+        query_crds = SkyCoord(ra=query_ra_list, dec=query_dec_list, unit=(u.deg, u.deg))
         logger.debug(f"Querying around {query_crds}")
 
-        query_ra_cent, query_dec_cent = get_image_center_wcs_coords(
-            image, origin=1)
+        query_ra_cent, query_dec_cent = get_image_center_wcs_coords(image, origin=1)
         logger.debug(f"Center RA: {query_ra_cent} Dec: {query_dec_cent}")
 
         (
@@ -403,8 +400,7 @@ class WFAUQuery(BaseWFCAMQuery):
                 # Make an entry in the queries table
                 if self.use_db_for_component_queries & (not query_exists):
                     queried_images = [
-                        open_raw_image(
-                            imagepath, open_f=open_compressed_wfcam_fits)
+                        open_raw_image(imagepath, open_f=open_compressed_wfcam_fits)
                         for imagepath in imagepaths
                     ]
                     for img in queried_images:
@@ -531,8 +527,7 @@ def download_wfcam_archive_images(
         base_name = get_wfcam_basename(
             multiframeid=multiframe_id, extension_id=extension_id
         )
-        imagepath = get_output_path(
-            base_name, dir_root=save_dir_path.as_posix())
+        imagepath = get_output_path(base_name, dir_root=save_dir_path.as_posix())
 
         if imagepath.exists():
             local_imagepaths = [imagepath]
@@ -562,8 +557,7 @@ def download_wfcam_archive_images(
                 )
                 wfcam_img_hdulist = obj.get_fits()
             except HTTPError as e:
-                logger.error(
-                    f"Failed to download image from {url}. Error: {e}")
+                logger.error(f"Failed to download image from {url}. Error: {e}")
                 continue
 
             # UKIRT ref images are stored as multiHDU files, need to combine the
@@ -688,8 +682,7 @@ def get_locally_existing_overlap_images(
     else:
         constraints = DBQueryConstraints(
             columns=["ramin", "ramax", "decmin", "decmax", "filter"],
-            accepted_values=[query_ra, query_ra,
-                             query_dec, query_dec, query_filt],
+            accepted_values=[query_ra, query_ra, query_dec, query_dec, query_filt],
             comparison_types=[">=", "<=", ">=", "<=", "="],
         )
     logger.debug(f"Constraints: {constraints.parse_constraints()}")

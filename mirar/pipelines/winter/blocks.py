@@ -233,14 +233,12 @@ load_raw = [
 ]
 
 load_astrometry = [
-    ImageLoader(input_sub_dir="post_scamp",
-                load_image=load_astrometried_winter_image)
+    ImageLoader(input_sub_dir="post_scamp", load_image=load_astrometried_winter_image)
 ]
 
 extract_all = [
     ImageRebatcher("EXPID"),
-    DatabaseImageBatchInserter(
-        db_table=Exposure, duplicate_protocol="replace"),
+    DatabaseImageBatchInserter(db_table=Exposure, duplicate_protocol="replace"),
 ]
 
 csvlog = [
@@ -346,8 +344,7 @@ load_unpacked = [
     ImageRebatcher(BASE_NAME_KEY),
 ]
 
-export_unpacked = [DatabaseImageInserter(
-    db_table=Raw, duplicate_protocol="replace")]
+export_unpacked = [DatabaseImageInserter(db_table=Raw, duplicate_protocol="replace")]
 load_and_export_unpacked = load_unpacked + export_unpacked
 
 
@@ -441,8 +438,7 @@ astrometry = [
         catalog_purifier=winter_astrometry_sextractor_catalog_purifier,
     ),
     CustomImageBatchModifier(winter_astrometric_ref_catalog_namer),
-    ImageRebatcher(
-        [TARGET_KEY, "FILTER", EXPTIME_KEY, "BOARD_ID", "SUBCOORD"]),
+    ImageRebatcher([TARGET_KEY, "FILTER", EXPTIME_KEY, "BOARD_ID", "SUBCOORD"]),
     Scamp(
         scamp_config_path=scamp_config_path,
         ref_catalog_generator=winter_astrometric_ref_catalog_generator,
@@ -466,8 +462,7 @@ validate_astrometry = [
         cache=False,
         crossmatch_radius_arcsec=5.0,
     ),
-    DatabaseImageInserter(db_table=AstrometryStat,
-                          duplicate_protocol="ignore"),
+    DatabaseImageInserter(db_table=AstrometryStat, duplicate_protocol="ignore"),
     CustomImageBatchModifier(poor_astrometric_quality_rejector),
 ]
 
@@ -827,13 +822,11 @@ avro_write = [
 ]
 
 # configure to broadcast to IPAC
-BROADCAST_BOOL = str(os.getenv("BROADCAST_AVRO", None)) in [
-    "True", "t", "1", "true"]
+BROADCAST_BOOL = str(os.getenv("BROADCAST_AVRO", None)) in ["True", "t", "1", "true"]
 
 avro_broadcast = [
     # Filter out low quality candidates
-    CustomSourceTableModifier(
-        modifier_function=winter_candidate_quality_filterer),
+    CustomSourceTableModifier(modifier_function=winter_candidate_quality_filterer),
     # Save candidates before sending to IPAC
     SourceWriter(output_dir_name="preskyportal"),
     # Only send a subset of the candidates to IPAC
@@ -854,11 +847,9 @@ avro_broadcast = [
 
 avro_export = avro_write + avro_broadcast
 
-process_candidates = ml_classify + \
-    crossmatch_candidates + name_candidates + avro_write
+process_candidates = ml_classify + crossmatch_candidates + name_candidates + avro_write
 
-load_avro = [SourceLoader(input_dir_name="preavro"),
-             SourceBatcher(BASE_NAME_KEY)]
+load_avro = [SourceLoader(input_dir_name="preavro"), SourceBatcher(BASE_NAME_KEY)]
 
 load_skyportal = [
     SourceLoader(input_dir_name="preskyportal"),
