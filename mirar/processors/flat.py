@@ -28,12 +28,14 @@ logger = logging.getLogger(__name__)
 
 
 def get_convolution(data: np.ndarray, kernel_width: int) -> np.ndarray:
-    """
-    Convolve data with a tophat kernel
+    """Convolve data with a tophat kernel
 
     :param data: Image data
     :param kernel_width: Width of the kernel (pixels)
-    :return: Smoothed image
+    :param data: np.ndarray: 
+    :param kernel_width: int: 
+    :returns: Smoothed image
+
     """
     pad_top = np.array([data[0] for _ in range(kernel_width)])
     pad_bottom = np.array([data[-1] for _ in range(kernel_width)])
@@ -50,27 +52,24 @@ def get_convolution(data: np.ndarray, kernel_width: int) -> np.ndarray:
 
 
 class MissingFlatError(ImageNotFoundError):
-    """
-    Error for when a dark image is missing
-    """
+    """Error for when a dark image is missing"""
 
 
 def default_select_flat(
     images: ImageBatch,
 ) -> ImageBatch:
-    """
-    Select images tagged as flat
+    """Select images tagged as flat
 
     :param images: set of images
-    :return: subset of flat images
+    :param images: ImageBatch: 
+    :returns: subset of flat images
+
     """
     return select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
 
 
 class FlatCalibrator(ProcessorWithCache):
-    """
-    Processor to apply flat calibration
-    """
+    """Processor to apply flat calibration"""
 
     base_key = "flat"
 
@@ -100,12 +99,18 @@ class FlatCalibrator(ProcessorWithCache):
             raise ValueError(f"Flat mode {self.flat_mode} not supported")
 
     def description(self) -> str:
+        """ """
         return "Creates a flat image, divides other images by this image."
 
     def _apply_to_images(
         self,
         batch: ImageBatch,
     ) -> ImageBatch:
+        """
+
+        :param batch: ImageBatch: 
+
+        """
         master_flat = self.get_cache_file(batch)
         master_flat_data = master_flat.get_data()
 
@@ -126,6 +131,11 @@ class FlatCalibrator(ProcessorWithCache):
         self,
         images: ImageBatch,
     ) -> Image:
+        """
+
+        :param images: ImageBatch: 
+
+        """
         images = self.select_cache_images(images)
 
         logger.debug(f"Found {len(images)} suitable flats in batch")
@@ -236,9 +246,7 @@ class FlatCalibrator(ProcessorWithCache):
 
 
 class SkyFlatCalibrator(FlatCalibrator):
-    """
-    Processor to do flat calibration using sky flats
-    """
+    """Processor to do flat calibration using sky flats"""
 
     def __init__(self, *args, flat_mask_key=None, **kwargs):
         super().__init__(
@@ -252,15 +260,17 @@ class SkyFlatCalibrator(FlatCalibrator):
     def select_sky_flat(
         images: ImageBatch,
     ) -> ImageBatch:
-        """
-        Select science images to use as sky flats
+        """Select science images to use as sky flats
 
         :param images: set of images
-        :return: subset of 'sky' images
+        :param images: ImageBatch: 
+        :returns: subset of 'sky' images
+
         """
         return select_from_images(images, key=OBSCLASS_KEY, target_values="science")
 
     def description(self) -> str:
+        """ """
         return (
             "Processor to create a sky flat image, divides other images by this image."
         )

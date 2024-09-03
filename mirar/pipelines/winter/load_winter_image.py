@@ -51,12 +51,13 @@ logger = logging.getLogger(__name__)
 
 
 def clean_header(header: fits.Header) -> fits.Header:
-    """
-    Function to clean the header of an image, adding in missing keys and
+    """Function to clean the header of an image, adding in missing keys and
     correcting values where necessary
 
     :param header: Header to clean
-    :return: Updated header
+    :param header: fits.Header: 
+    :returns: Updated header
+
     """
     header[GAIN_KEY] = 1.0
     header[SATURATE_KEY] = 40000.0
@@ -268,11 +269,12 @@ def clean_header(header: fits.Header) -> fits.Header:
 def load_winter_stack(
     path: str | Path,
 ) -> Image:
-    """
-    Load proc image
+    """Load proc image
 
     :param path: Path to image
-    :return: data and header
+    :param path: str | Path: 
+    :returns: data and header
+
     """
     logger.debug(f"Loading {path}")
     data, header = open_fits(path)
@@ -302,11 +304,12 @@ def load_winter_stack(
 
 
 def load_astrometried_winter_image(path: str | Path) -> Image:
-    """
-    Load astrometried image
+    """Load astrometried image
 
     :param path: Path to image
-    :return: Image object
+    :param path: str | Path: 
+    :returns: Image object
+
     """
     logger.debug(f"Loading {path}")
     data, header = open_fits(path)
@@ -320,11 +323,12 @@ def load_astrometried_winter_image(path: str | Path) -> Image:
 def load_stacked_winter_image(
     path: str | Path,
 ) -> tuple[np.array, fits.Header]:
-    """
-    Load proc image
+    """Load proc image
 
     :param path: Path to image
-    :return: data and header
+    :param path: str | Path: 
+    :returns: data and header
+
     """
     logger.debug(f"Loading {path}")
     data, header = open_fits(path)
@@ -348,11 +352,12 @@ def load_stacked_winter_image(
 def load_test_winter_image(
     path: str | Path,
 ) -> Image:
-    """
-    Load test WINTER image
+    """Load test WINTER image
 
     :param path: Path to image
-    :return: Image object
+    :param path: str | Path: 
+    :returns: Image object
+
     """
     image = open_raw_image(path)
     header = clean_header(image.header)
@@ -364,11 +369,12 @@ def load_test_winter_image(
 def load_raw_winter_mef(
     path: str,
 ) -> tuple[astropy.io.fits.Header, list[np.array], list[astropy.io.fits.Header]]:
-    """
-    Load mef image.
+    """Load mef image.
 
     :param path: Path to image
-    :return: Primary header, list of data arrays, list of headers
+    :param path: str: 
+    :returns: Primary header, list of data arrays, list of headers
+
     """
     primary_header, split_data, split_headers = open_mef_fits(path)
 
@@ -458,22 +464,24 @@ def load_raw_winter_mef(
 def load_winter_mef_image(
     path: str | Path,
 ) -> list[Image]:
-    """
-    Function to load winter mef images
+    """Function to load winter mef images
 
     :param path: Path to image
-    :return: list of images
+    :param path: str | Path: 
+    :returns: list of images
+
     """
     images = open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
     return images
 
 
 def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
-    """
-    Annotate winter header with information on the subdetector
+    """Annotate winter header with information on the subdetector
 
     :param batch: ImageBatch to annotate
-    :return: ImageBatch where images have the updated header
+    :param batch: ImageBatch: 
+    :returns: ImageBatch where images have the updated header
+
     """
     new_batch = []
     for image in batch:
@@ -519,8 +527,10 @@ def annotate_winter_subdet_headers(batch: ImageBatch) -> ImageBatch:
 
 
 def get_raw_winter_mask(image: Image) -> np.ndarray:
-    """
-    Get mask for raw winter image.
+    """Get mask for raw winter image.
+
+    :param image: Image: 
+
     """
     data = image.get_data()
     header = image.header

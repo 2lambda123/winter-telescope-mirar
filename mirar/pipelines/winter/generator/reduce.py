@@ -34,12 +34,13 @@ class ReductionQualityError(ProcessorError):
 
 
 def winter_stackid_annotator(batch: ImageBatch) -> ImageBatch:
-    """
-    Generates a stack id for WINTER images as the minimum of the RAWID of the
+    """Generates a stack id for WINTER images as the minimum of the RAWID of the
     images for which the stack was requested.
 
     :param batch: ImageBatch
-    :return: ImageBatch with stackid added to the header
+    :param batch: ImageBatch: 
+    :returns: ImageBatch with stackid added to the header
+
     """
     first_rawid = np.min([int(image["RAWID"]) for image in batch])
     for image in batch:
@@ -53,8 +54,10 @@ winter_history_deprecated_constraint = DBQueryConstraints(
 
 
 def winter_fourier_filtered_image_generator(batch: ImageBatch) -> ImageBatch:
-    """
-    Generates a fourier filtered image for the winter data
+    """Generates a fourier filtered image for the winter data
+
+    :param batch: ImageBatch: 
+
     """
     new_batch = []
     for image in batch:
@@ -82,8 +85,10 @@ def winter_fourier_filtered_image_generator(batch: ImageBatch) -> ImageBatch:
 
 
 def select_winter_sky_flat_images(images: ImageBatch) -> ImageBatch:
-    """
-    Selects the flat for the winter data, get the top 250 images sorted by median counts
+    """Selects the flat for the winter data, get the top 250 images sorted by median counts
+
+    :param images: ImageBatch: 
+
     """
     flat_images, medcounts = [], []
     for image in images:
@@ -110,16 +115,20 @@ def select_winter_sky_flat_images(images: ImageBatch) -> ImageBatch:
 
 
 def select_winter_flat_images(images: ImageBatch) -> ImageBatch:
-    """
-    Selects the flat for the winter data, get the top 250 images sorted by median counts
+    """Selects the flat for the winter data, get the top 250 images sorted by median counts
+
+    :param images: ImageBatch: 
+
     """
     flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
     return flat_images
 
 
 def select_winter_dome_flats_images(images: ImageBatch) -> ImageBatch:
-    """
-    Selects the flat for the winter data, get the top 250 images sorted by median counts
+    """Selects the flat for the winter data, get the top 250 images sorted by median counts
+
+    :param images: ImageBatch: 
+
     """
     flat_images = select_from_images(images, key=OBSCLASS_KEY, target_values="flat")
     flat_images = ImageBatch(
@@ -129,11 +138,12 @@ def select_winter_dome_flats_images(images: ImageBatch) -> ImageBatch:
 
 
 def winter_master_flat_path_generator(images: ImageBatch) -> Path:
-    """
-    Generates a master flat path for the winter data
+    """Generates a master flat path for the winter data
 
-    :param images:
-    :return: Path to master flat
+    :param images: return: Path to master flat
+    :param images: ImageBatch: 
+    :returns: Path to master flat
+
     """
     filters_list = [image[FILTER_KEY] for image in images]
     image_filter = np.unique(filters_list)
@@ -151,8 +161,10 @@ def winter_master_flat_path_generator(images: ImageBatch) -> Path:
 
 
 def winter_anet_sextractor_config_path_generator(image: Image) -> str:
-    """
-    Generates the sextractor config file path for the winter image
+    """Generates the sextractor config file path for the winter image
+
+    :param image: Image: 
+
     """
     if image["BOARD_ID"] in [1, 5, 6]:
         return sextractor_anet_config["config_path_boardid_1_5_6"]
@@ -163,9 +175,10 @@ def winter_anet_sextractor_config_path_generator(image: Image) -> str:
 def winter_imsub_catalog_purifier(sci_catalog: Table, ref_catalog: Table):
     """
 
-    :param sci_catalog:
-    :param ref_catalog:
-    :return:
+    :param sci_catalog: param ref_catalog:
+    :param sci_catalog: Table: 
+    :param ref_catalog: Table: 
+
     """
     good_sci_sources = (
         (sci_catalog["FLAGS"] == 0)
@@ -191,10 +204,12 @@ def winter_imsub_catalog_purifier(sci_catalog: Table, ref_catalog: Table):
 
 
 def mask_stamps_around_bright_stars(image: Image):
-    """
-    Masks the stamps around bright stars in the image
-    :param image:
-    :return: masked image
+    """Masks the stamps around bright stars in the image
+
+    :param image: return: masked image
+    :param image: Image: 
+    :returns: masked image
+
     """
 
     catalog_path = image[REF_CAT_PATH_KEY]
@@ -222,12 +237,14 @@ def mask_stamps_around_bright_stars(image: Image):
 
 
 def winter_boardid_6_demasker(images: ImageBatch) -> ImageBatch:
-    """
-    Demasks images from board 6 by replacing the bad channel pixels with the median of
+    """Demasks images from board 6 by replacing the bad channel pixels with the median of
     the unmasked pixels. This is required because swarp does not handle masked pixels
     distributed across the image well, producing a fully masked image.
+
     :param images: ImageBatch
-    :return: ImageBatch
+    :param images: ImageBatch: 
+    :returns: ImageBatch
+
     """
     for image in images:
         boardid = image.header["BOARD_ID"]

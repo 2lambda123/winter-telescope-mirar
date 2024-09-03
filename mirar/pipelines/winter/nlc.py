@@ -4,11 +4,12 @@ from mirar.data import ImageBatch
 
 
 def apply_winter_nlc(images: ImageBatch) -> ImageBatch:
-    """
-    Apply WINTER non-linear correction to images
+    """Apply WINTER non-linear correction to images
 
     :param images: ImageBatch to apply non-linear correction to
-    :return: Corrected ImageBatch
+    :param images: ImageBatch: 
+    :returns: Corrected ImageBatch
+
     """
 
     for image in images:

@@ -57,9 +57,7 @@ logger = logging.getLogger(__name__)
 
 
 class WINTERPipeline(Pipeline):
-    """
-    Pipeline for processing WINTER data
-    """
+    """Pipeline for processing WINTER data"""
 
     name = "winter"
     default_cal_requirements = winter_cal_requirements
@@ -121,10 +119,20 @@ class WINTERPipeline(Pipeline):
 
     @staticmethod
     def _load_raw_image(path: str) -> Image | list[Image]:
+        """
+
+        :param path: str: 
+
+        """
         return open_mef_image(path, load_raw_winter_mef, extension_key="BOARD_ID")
 
     @staticmethod
     def download_raw_images_for_night(night: str):
+        """
+
+        :param night: str: 
+
+        """
         download_via_ssh(
             server="winter.caltech.edu",
             base_dir="/data/loki/raw_data/winter",
@@ -134,4 +142,5 @@ class WINTERPipeline(Pipeline):
         )
 
     def set_up_pipeline(self):
+        """ """
         set_up_winter_databases()

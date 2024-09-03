@@ -56,33 +56,23 @@ wfau_image_width = 90 * u.arcmin
 
 
 class WFAURefError(ProcessorError):
-    """
-    Base UKIRTRef error
-    """
+    """Base UKIRTRef error"""
 
 
 class NotinWFCAMError(ProcessorError):
-    """
-    Error when the coordinates are not in WFAU footprint
-    """
+    """Error when the coordinates are not in WFAU footprint"""
 
 
 class WFAUQueryDBError(ProcessorError):
-    """
-    Error related to the databases while querying
-    """
+    """Error related to the databases while querying"""
 
 
 class WFCAMRefNotFoundError(ProcessorError):
-    """
-    Error when WFCAM ref is not found for some reason
-    """
+    """Error when WFCAM ref is not found for some reason"""
 
 
 class BaseWFCAMQuery:
-    """
-    Base class for querying WFCAM images
-    """
+    """Base class for querying WFCAM images"""
 
     def __init__(
         self,
@@ -118,17 +108,18 @@ class BaseWFCAMQuery:
         self.filter_name = filter_name
 
     def run_query(self, image: Image) -> ImageBatch:
-        """
-        Run the query for the given image
+        """Run the query for the given image
+
         :param image: Image to query for
-        :return: ImageBatch containing the queried images
+        :param image: Image: 
+        :returns: ImageBatch containing the queried images
+
         """
         raise NotImplementedError
 
 
 class WFAUQuery(BaseWFCAMQuery):
-    """
-    Class to handle queries to the online WFAU archive. To reduce the number of
+    """Class to handle queries to the online WFAU archive. To reduce the number of
     queries to the server, the user can optionally choose to set up databases. If
     this is chosen, this script currently assumes the following database structure ->
     1. Two tables : query_db_table and components_db_table
@@ -143,7 +134,7 @@ class WFAUQuery(BaseWFCAMQuery):
     mirar/pipelines/winter/models/ref_queries.py and
     mirar/pipelines/winter/models/ref_components.py to set up the tables in your
     database.
-
+    
     1. The user specifies an image and the filter to query and optionally the
     database details.
     2. The image is broken down into user-specified number of coordinates to get
@@ -159,6 +150,8 @@ class WFAUQuery(BaseWFCAMQuery):
     6. If not, the image is downloaded and saved to the user-specified path.
     7. If the user has specified database details, the details of the downloaded image
     and the query are ingested into the respective tables.
+
+
     """
 
     def __init__(
@@ -246,22 +239,26 @@ class WFAUQuery(BaseWFCAMQuery):
                     raise ValueError(f"{key} must be present in the query_db_table")
 
     def get_query_class(self) -> BaseWFAUClass:
-        """
-        Get the class that will be used to query the WFAU database, e.g. VSAClass or
+        """Get the class that will be used to query the WFAU database, e.g. VSAClass or
         UKIDSSClass
         :return: Class that will be used to query the WFAU database
+
+
         """
         raise NotImplementedError
 
     def get_surveys_query_class(
         self, ra: float, dec: float
     ) -> (list[MOCSurvey], BaseWFAUClass):
-        """
-        Get the surveys that are available at the given coordinates
+        """Get the surveys that are available at the given coordinates
+
         :param ra: RA of the coordinates
         :param dec: Dec of the coordinates
-        :return: List of surveys that are available at the given coordinates
-        :return: Class that will be used to query the WFAU database
+        :param ra: float: 
+        :param dec: float) -> (list[MOCSurvey]: 
+        :param BaseWFAUClass: 
+        :returns: List of surveys that are available at the given coordinates
+
         """
         ukirt_surveys = find_wfcam_surveys(
             ra=ra, dec=dec, band=self.filter_name, telescope="ukirt"
@@ -284,13 +281,16 @@ class WFAUQuery(BaseWFCAMQuery):
     def get_query_crds(
         self, header: fits.Header, num_query_points: int
     ) -> tuple[list[float], list[float]]:
-        """
-        Get the query coordinates from the header.
+        """Get the query coordinates from the header.
+
         :param header: Header of the image.
         :param num_query_points: Number of points to use to define the query region.
         The image is divided into np.sqrt(num_query_points) x np.sqrt(num_query_points)
         regions.
-        :return: Tuple of lists of RA and Dec coordinates.
+        :param header: fits.Header: 
+        :param num_query_points: int: 
+        :returns: Tuple of lists of RA and Dec coordinates.
+
         """
         return self.query_coords_function(header, num_query_points)
 
@@ -298,10 +298,12 @@ class WFAUQuery(BaseWFCAMQuery):
         self,
         image: Image,
     ) -> ImageBatch:
-        """
-        Run the query to the WFAU database.
+        """Run the query to the WFAU database.
+
         :param image: Image to query around.
-        :return: ImageBatch with the results of the query.
+        :param image: Image: 
+        :returns: ImageBatch with the results of the query.
+
         """
         query_ra_list, query_dec_list = self.get_query_crds(
             image.header, self.num_query_points
@@ -444,10 +446,12 @@ class WFAUQuery(BaseWFCAMQuery):
         return wfcam_images
 
     def run_query(self, image: Image) -> ImageBatch:
-        """
-        Run the query on the UKIRT server.
+        """Run the query on the UKIRT server.
+
         :param image: Image object with the coordinates of the image.
-        :return: ImageBatch object with the downloaded images.
+        :param image: Image: 
+        :returns: ImageBatch object with the downloaded images.
+
         """
         return self.run_wfau_query(image=image)
 
@@ -465,9 +469,9 @@ def download_wfcam_archive_images(
     duplicate_protocol: str = "ignore",
     undeprecated_compids_file: Path = wfcam_undeprecated_compid_file,
 ) -> list[Path]:
-    """
-    Download the image from UKIRT server. Optionally, check if the image exists locally
+    """Download the image from UKIRT server. Optionally, check if the image exists locally
     and ingest it into a database.
+
     :param crd: SkyCoord object with the coordinates of the image.
     :param wfau_query: WFAU query object.
     :param survey_name: Name of the survey to query.
@@ -483,6 +487,18 @@ def download_wfcam_archive_images(
     :param undeprecated_compids_file: Path to the file with the list of undeprecated
     component ids.
     :return imagepaths: List of paths to the downloaded images.
+    :param crd: SkyCoord: 
+    :param wfau_query: BaseWFAUClass: 
+    :param survey_name: str: 
+    :param waveband: str: 
+    :param save_dir_path: Path: 
+    :param image_width: Quantity:  (Default value = wfau_image_width)
+    :param image_height: Quantity:  (Default value = wfau_image_height)
+    :param use_local_database: bool:  (Default value = False)
+    :param components_table: Type[BaseDB]:  (Default value = None)
+    :param duplicate_protocol: str:  (Default value = "ignore")
+    :param undeprecated_compids_file: Path:  (Default value = wfcam_undeprecated_compid_file)
+
     """
     # ukirt_query = UkidssClass()
     wfau_query.database = survey_name
@@ -596,17 +612,23 @@ def check_query_exists_locally(
     query_table: Type[BaseDB],
     components_table: Type[BaseDB],
 ) -> list[Path]:
-    """
-    Function to check if component images exist locally based on the query_ra
+    """Function to check if component images exist locally based on the query_ra
     and query_dec
     Args:
-        :param query_ra: ra that was queried
-        :param query_dec: dec that was queried
-        :param query_filt: filter that was queried
-        :param query_table: table with query details
-        :param components_table: table with component image details
+
+    :param query_ra: ra that was queried
+    :param query_dec: dec that was queried
+    :param query_filt: filter that was queried
+    :param query_table: table with query details
+    :param components_table: table with component image details
     Returns:
-        :return: list of savepaths
+    :param query_ra: float: 
+    :param query_dec: float: 
+    :param query_filt: str: 
+    :param query_table: Type[BaseDB]: 
+    :param components_table: Type[BaseDB]: 
+    :returns: list of savepaths
+
     """
 
     constraints = DBQueryConstraints(
@@ -654,16 +676,21 @@ def check_query_exists_locally(
 def get_locally_existing_overlap_images(
     query_ra: float, query_dec: float, query_filt: str, components_table: Type[BaseDB]
 ) -> list[Path]:
-    """
-    Function to get the locally existing images that overlap with the given coordinates
+    """Function to get the locally existing images that overlap with the given coordinates
     Args:
-        :param query_ra: ra that was queried
-        :param query_dec: dec that was queried
-        :param query_filt: filter that was queried
-        :param components_table: table with component image details
 
+    :param query_ra: ra that was queried
+    :param query_dec: dec that was queried
+    :param query_filt: filter that was queried
+    :param components_table: table with component image details
+    
     Returns:
-        :return: list of savepaths
+    :param query_ra: float: 
+    :param query_dec: float: 
+    :param query_filt: str: 
+    :param components_table: Type[BaseDB]: 
+    :returns: list of savepaths
+
     """
 
     # Get around RA=0/360 issue
@@ -716,15 +743,19 @@ def check_multiframe_exists_locally(
     multiframe_id: int,
     extension_id: int,
 ) -> list[Path]:
-    """
-    Function to query database to check if a multiframe exists locally
+    """Function to query database to check if a multiframe exists locally
     Args:
-        :param db_table: table with multiframe details
-        :param multiframe_id: multiframe id
-        :param extension_id: extension id
 
+    :param db_table: table with multiframe details
+    :param multiframe_id: multiframe id
+    :param extension_id: extension id
+    
     Returns:
-        :return: list of savepaths
+    :param db_table: Type[BaseDB]: 
+    :param multiframe_id: int: 
+    :param extension_id: int: 
+    :returns: list of savepaths
+
     """
 
     db_constraints = DBQueryConstraints(
