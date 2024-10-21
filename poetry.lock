@@ -3390,34 +3390,39 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "photutils"
-version = "1.13.0"
+version = "2.0.1"
 description = "An Astropy package for source detection and photometry"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "photutils-1.13.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:dced29b5c7af803aeafbbaa726d3afffc8955f4f28b86e187b6a6c5a08300caf"},
-    {file = "photutils-1.13.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:51ef897a3188ee2ac9cff26b446ff65015f732816adbd05ef419d38f3122ba93"},
-    {file = "photutils-1.13.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:debf8e2b945822e7a0fd39a3f21e298d014fcf3c251014c1daaf4edfc14079af"},
-    {file = "photutils-1.13.0-cp310-cp310-win_amd64.whl", hash = "sha256:122c15d264ca065b23b906819f1fc89984d459aeda840d49e0d699bac8e5db16"},
-    {file = "photutils-1.13.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f0168a1c9b8a73663febf95046e30dc136a403881502b39642187ce8a4ad9a47"},
-    {file = "photutils-1.13.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:6381d16b691b6718b7a99e1044300967f606cd47f05abd56a7b2139264016d86"},
-    {file = "photutils-1.13.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:24d6510cb557ec8cc432b479132028ba995660178554603d83d56dca70bd8d1f"},
-    {file = "photutils-1.13.0-cp311-cp311-win_amd64.whl", hash = "sha256:609b5e2afe525f5c652d235ce485089109954806f03d03f88b7555e80dff47e5"},
-    {file = "photutils-1.13.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:c1fd66336953e45634926711ade21a764880dff4a011d83ced8dd5b864d48e66"},
-    {file = "photutils-1.13.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8c8906b6d01a834a78277c7bccd10b5a8cc730fcdbbee5571d7e33e46ec11bd4"},
-    {file = "photutils-1.13.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b847523d5593a700b70b8287cfc2721bbff54e16dedb5e5ad2421bec59f90749"},
-    {file = "photutils-1.13.0-cp312-cp312-win_amd64.whl", hash = "sha256:cc2c0bfbcccc1f6a7c6ba0b4ecb50999d32d2017624fbd8586f5ffe06cf36dda"},
-    {file = "photutils-1.13.0.tar.gz", hash = "sha256:da3621d0f9e54f22a54ac4cac429a68ddfef45380db7962bfd763625606717d2"},
+    {file = "photutils-2.0.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:db54d4d1a27b72175361274bd1713d8604eeb589b002b3eaebed60ac9e2a6221"},
+    {file = "photutils-2.0.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ef03c258026250a68d71deb26750801c249de86016c04de78f77e7773fae967e"},
+    {file = "photutils-2.0.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:727b8eb618ba2be89108d052da7b225ae01926900a263c7e4f60c8c32dd4d587"},
+    {file = "photutils-2.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:e6b4061f7b87e24b739ed991a8d8c4ece752c6d727863acb1d3e01430d152638"},
+    {file = "photutils-2.0.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f495b8dccd37695c0975c303b4a38785018ddb9880f5f1fb5013c6afca000aac"},
+    {file = "photutils-2.0.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:b5028e8c59bff541389e3bb00c0eae1b583154ba03fbefee2c369983d53634b4"},
+    {file = "photutils-2.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f2361f25bbf4d252c398e60374729ee8a19eb86e3efd24f2143b9aa56c1f5ffa"},
+    {file = "photutils-2.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:aed7a611ef02686be473e641a8d2790d0679ffcf52699e3e3e93829be8237b97"},
+    {file = "photutils-2.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:0be4ec361c9479e533f2be4857b9143398f01499d4b9edc11203968f1bb4d66b"},
+    {file = "photutils-2.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:0886a494582ca0e00237d1f2aabc3e2250ada661ed05c72fcf3cc4615dd0b448"},
+    {file = "photutils-2.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a4db0d8bb3091ce7bd77fddf418adcc956ac8f1f791fb927e0dce592c6c553bc"},
+    {file = "photutils-2.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:8d4c94d12b0ac9a20e465b1e679ca7d43e650de66839296b8689a72aaf3704db"},
+    {file = "photutils-2.0.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:c06355aadd7a41cb6b603f06d1598a4f6aef9b2770dcf26d0791f86b36a6e10a"},
+    {file = "photutils-2.0.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:11afe9925c0f0b23e3bc25344823cf54f4c11747301964f0cd992c9cd54f3294"},
+    {file = "photutils-2.0.1-cp313-cp313-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:09b30388b0a9e59c2bfd8f261564d3a4c38183caba81fc2912d3f9b543f99d89"},
+    {file = "photutils-2.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:e2bad88655490aa9a810e3abe7ce0d5dc294f8371cd8f1f4c8ffd810b7d0e6c4"},
+    {file = "photutils-2.0.1.tar.gz", hash = "sha256:6f78a25cda0c12562e490be8f5e02956770afd84fbb897f6e0268ea757b99ad5"},
 ]
 
 [package.dependencies]
-astropy = ">=5.1"
-numpy = ">=1.23"
+astropy = ">=5.3"
+numpy = ">=1.24"
+scipy = ">=1.10"
 
 [package.extras]
-all = ["bottleneck", "gwcs (>=0.18)", "matplotlib (>=3.5)", "rasterio", "scikit-image (>=0.20)", "scipy (>=1.8)", "shapely", "tqdm"]
-docs = ["photutils[all]", "sphinx", "sphinx-astropy (>=1.9)", "tomli"]
-test = ["pytest-astropy (>=0.11)"]
+all = ["bottleneck", "gwcs (>=0.19)", "matplotlib (>=3.7)", "rasterio", "regions (>=0.9)", "scikit-image (>=0.20)", "shapely", "tqdm"]
+docs = ["photutils[all]", "sphinx", "sphinx-astropy[confv2] (>=1.9.1)", "sphinx-design", "tomli"]
+test = ["pytest-astropy (>=0.11)", "pytest-xdist (>=2.5.0)"]
 
 [[package]]
 name = "pillow"
@@ -5795,4 +5800,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10.0,<3.13"
-content-hash = "61547c416bc4d12ecdcc12ab034768754877b5b1f7d52daf92b570dc7c8871da"
+content-hash = "700d4d9142d3f154d439a0623166e6ef238ca0edaef9813a4b3ae96cc84ab123"
