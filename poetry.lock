@@ -5774,13 +5774,13 @@ dev = ["black", "isort"]
 
 [[package]]
 name = "wintertoo"
-version = "1.6.2"
+version = "1.7.1"
 description = ""
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "wintertoo-1.6.2-py3-none-any.whl", hash = "sha256:d45401b8389fa8277c9c973505b481e2c97a09779fb957daadb4547fbaafa2e5"},
-    {file = "wintertoo-1.6.2.tar.gz", hash = "sha256:456e5c061de6464c811e8a6bdda59fbff59970904f3b86747db87f052bc185b0"},
+    {file = "wintertoo-1.7.1-py3-none-any.whl", hash = "sha256:e608e50823f287278bcdaa1fc8ba8439cb4daf0bebaac86ee16ccc57315c21a4"},
+    {file = "wintertoo-1.7.1.tar.gz", hash = "sha256:a3fab0d6b4b6263edf59724bcd05e1c0005b65a43a0a983fbf8a5fd8eb21f41a"},
 ]
 
 [package.dependencies]
